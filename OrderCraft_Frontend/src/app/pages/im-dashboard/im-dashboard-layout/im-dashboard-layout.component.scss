@@ -1,0 +1,388 @@
+.dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f8fafc; // Tailwind gray-50
+}
+ 
+.sidebar {
+  width: 250px;
+  background-color: #1e3a8a; // Tailwind blue-800
+  color: white;
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+ 
+  .sidebar-header {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #ffffff;
+    text-align: center;
+  }
+ 
+  .nav-links {
+    list-style: none;
+    padding: 0;
+ 
+    li {
+      margin: 15px 0;
+ 
+      a {
+        color: #dbeafe; // Tailwind blue-100
+        text-decoration: none;
+        font-size: 1rem;
+        padding: 10px 15px;
+        display: block;
+        border-radius: 8px;
+        transition: background-color 0.3s;
+ 
+        &:hover {
+          background-color: #2563eb; // blue-600
+          color: white;
+        }
+ 
+        &.active {
+          background-color: #2563eb;
+          font-weight: 600;
+        }
+      }
+    }
+  }
+}
+ 
+/* ===== HEADER BAR ===== */
+.header-bar {
+  position: fixed;
+  top: 0;
+  left: 300px;
+  right: 0;
+  height: 60px; /* Adjust height */
+  background-color: #f8fafc;
+  border-bottom: 1px solid #e5e7eb; /* Tailwind gray-200 */
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0 20px;
+  z-index: 1000;
+}
+ 
+.dashboard-main {
+  flex: 1;
+  padding-top: 50px; // leave space for the fixed navbar
+  padding-left: 0;
+  display: flex;
+  flex-direction: column;
+ 
+  .content {
+    padding: 30px 60px;
+    background-color: #f8fafc;
+ 
+    @media (max-width: 768px) {
+      padding: 20px;
+    }
+  }
+}
+ 
+.po-dashboard-title {
+  font-size: 2rem;
+  margin-bottom: 40px;
+  color: #1e3a8a;
+}
+ 
+.po-dashboard-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+ 
+  button {
+    padding: 15px 30px;
+    font-size: 1rem;
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+ 
+    &:hover {
+      background-color: #1d4ed8;
+      transform: translateY(-2px);
+    }
+  }
+ 
+  @media (min-width: 600px) {
+    flex-direction: row;
+    justify-content: center;
+ 
+    button {
+      width: 200px;
+    }
+  }
+}
+ 
+.nav-links li a i,
+.po-dashboard-actions button i,
+.po-dashboard-title i {
+  margin-right: 8px;
+  font-size: 1.2rem;
+  vertical-align: middle;
+}
+ 
+.top-right-icons {
+  position: fixed;
+  top: 15px;
+  right: 20px;
+  display: flex;
+  gap: 20px;
+  z-index: 1000;
+}
+ 
+.top-right-icons .icon-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #1e3a8a; /* Tailwind blue-800 */
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s ease;
+  position: relative; // NEW: added in second version
+}
+ 
+.top-right-icons .icon-btn:hover {
+  color: #2563eb; /* Tailwind blue-600 */
+}
+ 
+/* ===== NEW: Notification Badge ===== */
+.notification-badge { // NEW
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: #dc3545;
+  color: white;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 0.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+ 
+/* ===== NEW: Notifications Dropdown ===== */
+.notifications-dropdown { // NEW
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+ 
+.notifications-menu { // NEW
+  position: absolute;
+  right: 0;
+  top: 120%;
+  width: 450px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1001;
+  max-height: 500px;
+  overflow-y: auto;
+}
+ 
+.notifications-header { // NEW
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  background: white;
+ 
+  h4 {
+    margin: 0;
+    color: #333;
+  }
+ 
+  .mark-all-read {
+    background: none;
+    border: none;
+    color: #2563eb;
+    cursor: pointer;
+    font-size: 0.9rem;
+ 
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+ 
+.notifications-list { // NEW
+  padding: 0;
+}
+ 
+.loading-notifications, .error-notifications { // NEW
+  padding: 20px;
+  text-align: center;
+  color: #666;
+ 
+  .spinner {
+    animation: spin 1s linear infinite;
+  }
+}
+ 
+.error-notifications { // NEW
+  color: #dc3545;
+}
+ 
+@keyframes spin { // NEW
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+ 
+.notification-item {
+  padding: 15px;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.2s;
+ 
+  &:last-child {
+    border-bottom: none;
+  }
+ 
+  &:hover {
+    background-color: #f8f9fa;
+  }
+ 
+  &.unread { // NEW: added unread style
+    background-color: #f0f7ff;
+ 
+    &:hover {
+      background-color: #e6f2ff;
+    }
+  }
+ 
+  &.read { // NEW: added read style
+    opacity: 0.6;
+    background-color: #f8f9fa;
+ 
+    .alert-message {
+      color: #6c757d;
+    }
+ 
+    .alert-details {
+      color: #6c757d;
+    }
+ 
+    .alert-action {
+      color: #6c757d;
+    }
+ 
+    .alert-status {
+      opacity: 0.7;
+    }
+  }
+}
+ 
+.notification-content { // NEW
+  margin-bottom: 8px;
+}
+ 
+.alert-message { // NEW
+  font-weight: bold;
+  color: #dc3545;
+  margin-bottom: 5px;
+}
+ 
+.alert-details { // NEW
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 5px;
+}
+ 
+.alert-action { // NEW
+  color: #28a745;
+  font-weight: 500;
+  font-size: 0.9rem;
+  margin-bottom: 5px;
+}
+ 
+.alert-status { // NEW
+  font-size: 0.8rem;
+  padding: 3px 8px;
+  border-radius: 4px;
+  display: inline-block;
+ 
+  &.new {
+    background-color: #fff3cd;
+    color: #856404;
+  }
+ 
+  &.scheduled {
+    background-color: #d4edda;
+    color: #155724;
+  }
+}
+ 
+.notification-time { // NEW
+  font-size: 0.8rem;
+  color: #999;
+  text-align: right;
+}
+ 
+.no-notifications { // NEW
+  padding: 30px 20px;
+  text-align: center;
+  color: #28a745;
+ 
+  i {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    display: block;
+  }
+}
+ 
+.profile-dropdown {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+ 
+.profile-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+ 
+.dropdown-menu {
+  position: absolute;
+  right: 0;
+  top: 120%;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 0.3rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+}
+ 
+.dropdown-menu button {
+  padding: 0.5rem 1rem;
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+}
+ 
+.dropdown-menu button:hover {
+  background-color: #f5f5f5;
+}
+ 

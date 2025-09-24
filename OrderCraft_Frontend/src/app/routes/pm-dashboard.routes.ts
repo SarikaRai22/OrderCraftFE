@@ -1,0 +1,32 @@
+import { Routes } from '@angular/router';
+import { PmDashboardLayoutComponent } from '../pages/pm-dashboard/pm-dashboard-layout/pm-dashboard-layout.component';
+
+export const pmDashboardRoutes: Routes = [
+  {
+    path: '',
+    component: PmDashboardLayoutComponent,
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('../pages/pm-dashboard/view-production-timeline/view-production-timeline.component').then(
+            m => m.ViewProductionTimelineComponent
+          ),
+      },
+      {
+        path: 'user-profile',
+        loadComponent: () =>
+          import('../pages/user-profile/user-profile.component').then(
+            m => m.UserProfileComponent
+          ),
+      },
+      {
+        path: 'edit-profile',
+        loadComponent: () =>
+          import('../pages/edit-user-profile/edit-user-profile.component').then(
+            m => m.EditUserProfileComponent
+          ),
+      }
+    ],
+  },
+];

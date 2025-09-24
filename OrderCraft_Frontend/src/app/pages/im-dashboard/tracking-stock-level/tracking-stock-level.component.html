@@ -1,0 +1,72 @@
+<div class="stock-tracking-container page-container">
+ 
+  <!-- 🔹 Filters -->
+  <div class="filters filter-panel card-shadow">
+    <label>
+      Category:
+      <select class="input-field" [(ngModel)]="selectedCategory">
+        <option [ngValue]="null">All</option>
+        <option *ngFor="let c of categories" [ngValue]="c">{{ c.categoryName }}</option>
+      </select>
+    </label>
+ 
+    <label>
+      Search Product:
+      <input class="input-field" type="text" [(ngModel)]="searchName" placeholder="Enter name..." />
+    </label>
+  </div>
+ 
+  <!-- Inventory Product Cards -->
+  <div class="stats-grid" *ngIf="products.length > 0">
+    <div
+      class="stat-card product-card card-shadow"
+      *ngFor="let p of applyFilters()"
+      [ngClass]="{'low-stock': p.productsQuantity <= (p.minThreshold || 0)}"
+    >
+      <i class="bi bi-box-seam stat-icon"></i>
+      <div class="stat-content">
+        <div class="stat-number">
+          {{ p.productsQuantity }}
+          <i
+            *ngIf="p.productsQuantity <= (p.minThreshold || 0)"
+            class="bi bi-exclamation-circle-fill alert-icon"
+            title="Low Stock"
+          ></i>
+        </div>
+        <div class="stat-label">{{ p.productsName }}</div>
+        <div class="stat-extra">
+          <span class="badge category">Category: {{ p.category.categoryName }}</span>
+          <span class="badge threshold">Min: {{ p.minThreshold || 0 }}, Max: {{ p.maxThreshold || '-' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+ 
+  <!--  Chart Mode Selector -->
+  <div class="chart-mode selector-panel card-shadow">
+    <label for="categorySelect">View:</label>
+    <select id="categorySelect" class="input-field" (change)="onCategorySelect($event)">
+      <option value="all">All Categories</option>
+      <option *ngFor="let category of categories" [value]="category.categoriesId">
+        {{ category.categoryName }}
+      </option>
+    </select>
+  </div>
+ 
+  <!-- 🔹 Charts Section -->
+  <div class="charts-grid">
+    <!-- Pie Chart -->
+    <div class="chart-card card-shadow">
+      <h3>Stock by Category</h3>
+      <canvas id="pieChart"></canvas>
+    </div>
+ 
+    <!-- Threshold Chart -->
+    <div class="chart-card card-shadow">
+      <h3>Threshold Levels</h3>
+      <canvas id="thresholdChart"></canvas>
+    </div>
+  </div>
+</div>
+ 
+ 

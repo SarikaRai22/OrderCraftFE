@@ -1,0 +1,63 @@
+<div class="return-order-container">
+  <div class="orders-container">
+    <h2>Return Order #{{ order.poId }}</h2>
+ 
+    <!-- Return Reason -->
+    <div class="form-group">
+      <label for="returnReason">
+        Return Reason: <span class="required-asterisk">*</span>
+      </label>
+      <textarea
+        id="returnReason"
+        [(ngModel)]="returnReason"
+        name="returnReason"
+        rows="3"
+        cols="50"
+        placeholder="Please describe the reason for returning this order..."
+        required>
+      </textarea>
+    </div>
+ 
+    <h3>Return Items</h3>
+ 
+    <div *ngFor="let item of itemsToReturn; let i = index" class="item-container">
+      <p><strong>Product:</strong> {{ item.productsName }}</p>
+ 
+      <div class="item-fields">
+        <div class="quantity-field">
+          <label for="qty-{{ i }}">
+            Quantity: <span class="required-asterisk">*</span>
+          </label>
+          <input
+            id="qty-{{ i }}"
+            type="number"
+            [(ngModel)]="item.quantity"
+            name="quantity-{{ i }}"
+            min="1"
+            required
+          />
+        </div>
+ 
+        <div class="condition-field">
+          <label for="note-{{ i }}">
+            Condition Note: <span class="required-asterisk">*</span>
+          </label>
+          <input
+            id="note-{{ i }}"
+            type="text"
+            [(ngModel)]="item.conditionNote"
+            name="conditionNote-{{ i }}"
+            placeholder="Describe the condition of the item..."
+            required
+          />
+        </div>
+      </div>
+    </div>
+ 
+    <!-- Actions -->
+    <div class="button-group">
+      <button (click)="submitReturn()">Submit Return</button>
+      <button (click)="cancel()">Cancel</button>
+    </div>
+  </div>
+</div>

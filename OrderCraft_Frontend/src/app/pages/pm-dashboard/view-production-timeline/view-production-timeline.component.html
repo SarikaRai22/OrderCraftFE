@@ -1,0 +1,53 @@
+<div class="container">
+  <h2>View Production Timeline</h2>
+
+  <form [formGroup]="filterForm" class="filter-form">
+  <label>Product:</label>
+  <select formControlName="productId">
+    <option value="">All</option>
+    <option *ngFor="let p of products" [value]="p.productsId">{{ p.productsName }}</option>
+  </select>
+
+  <label>Status:</label>
+  <select formControlName="status">
+    <option value="">All</option>
+    <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
+  </select>
+
+  <label>Start Date:</label>
+  <input type="date" formControlName="startDate" />
+
+  <label>End Date:</label>
+  <input type="date" formControlName="endDate" />
+
+  <button type="button" (click)="resetFilters()">Reset</button>
+</form>
+
+  <p *ngIf="error" class="error">{{ error }}</p>
+  <p *ngIf="loading">Loading...</p>
+
+  <table *ngIf="timelines.length > 0">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Product</th>
+        <th>Start Date</th>
+        <th>End Date</th>
+        <th>Quantity</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let t of timelines">
+        <td>{{ t.scheduleId }}</td>
+        <td>{{ t.productName }}</td>
+        <td>{{ t.startDate | date }}</td>
+        <td>{{ t.endDate | date }}</td>
+        <td>{{ t.quantity }}</td>
+        <td>{{ t.status }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p *ngIf="!loading && timelines.length === 0">No records found.</p>
+</div>

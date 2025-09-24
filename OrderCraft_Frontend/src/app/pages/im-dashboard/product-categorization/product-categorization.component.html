@@ -1,0 +1,88 @@
+<div class="container">
+  <div class="page-header">
+  <h1 class="main-title">🛍️ Product Categorization</h1>
+ 
+</div>
+ 
+  <!-- Add Product (IM only) -->
+  <div class="add-product-form" *ngIf="canManageInventory()">
+    <h3>➕ Add New Product</h3>
+    <form (ngSubmit)="addProduct()">
+      <div class="form-grid">
+        <input type="text" [(ngModel)]="newProduct.productsName" name="productName" placeholder="Product name" required />
+        <input type="text" [(ngModel)]="newProduct.productsDescription" name="productDesc" placeholder="Description" />
+        <input type="number" [(ngModel)]="newProduct.unitPrice" name="unitPrice" placeholder="Unit Price" required />
+        <input type="number" [(ngModel)]="newProduct.quantity" name="quantity" placeholder="Quantity" required />
+       
+        <select [(ngModel)]="newProduct.categoryId" name="categoryId">
+          <option [ngValue]="null">-- Select Category --</option>
+          <option *ngFor="let cat of categories" [value]="cat.categoriesId">
+            {{ cat.categoryName }}
+          </option>
+        </select>
+ 
+        <input type="text" [(ngModel)]="newProduct.newCategoryName" name="newCategoryName" placeholder="Or enter new category" />
+      </div>
+ 
+      <button type="submit" class="submit-btn">Add Product</button>
+    </form>
+  </div>
+  <!-- Categories -->
+  <h2 class="section-title">📂 Categories</h2>
+  <div class="categories-card">
+    <ul class="category-list">
+      <li *ngFor="let category of categories" [class.active]="selectedCategoryId === category.categoriesId">
+        <span (click)="selectedCategoryId = category.categoriesId; loadProducts()">
+          {{ category.categoryName }}
+        </span>
+        <button
+          *ngIf="canManageInventory()"
+           class="delete-btn"
+           (click)="confirmDeleteCategory(category.categoriesId)">
+                    🗑️
+        </button>
+      </li>
+    </ul>
+  </div>
+ 
+  <hr />
+ 
+  <!-- Products -->
+  <h2 class="section-title">🛒 Products</h2>
+  <div class="products-card">
+    <table class="product-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+          <th>Unit Price</th>
+          <th>Quantity</th>
+          <th>Category</th>
+          <th *ngIf="canManageInventory()">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let product of products">
+          <td>{{ product.productsName }}</td>
+          <td>{{ product.productsDescription }}</td>
+          <td>₹{{ product.productsUnitPrice }}</td>
+          <td>{{ product.productsQuantity }}</td>
+          <td>{{ product.category?.categoryName }}</td>
+          <td *ngIf="canManageInventory()">
+           <button
+              *ngIf="canManageInventory()"
+              class="delete-btn"
+              (click)="confirmDeleteProduct(product.productsId)">
+               🗑️
+           
+              </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+ 
+ 
+</div>
+ 
+ 

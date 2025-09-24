@@ -1,0 +1,59 @@
+
+
+<div class="dashboard-layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">Admin Panel</div>
+    <ul class="nav-links">
+      <!-- <li>
+        <a routerLink="/admin-dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <i class="bi bi-house-door-fill"></i> Dashboard
+        </a>
+      </li> -->
+      <li>
+        <a routerLink="/admin-dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <i class="bi bi-people-fill"></i> View Users
+        </a>
+
+      </li>
+      <li>
+        <a routerLink="/admin-dashboard/register-user" routerLinkActive="active">
+          <i class="bi bi-person-plus-fill"></i> Register User
+        </a>
+      </li>
+      
+      <li (click)="logout()" class="logout-link">
+        <a><i class="bi bi-box-arrow-right"></i> Logout</a>
+      </li>
+    </ul>
+  </aside>
+
+  <!-- Main Content -->
+  <header class="header-bar">
+  <div class="top-right-icons">
+    <button class="icon-btn" (click)="goToDashboard()" title="Home">
+      <i class="bi bi-house-door"></i>
+    </button>
+    <!-- <button class="icon-btn" title="Settings">
+      <i class="bi bi-gear"></i>
+    </button> -->
+
+    <div class="profile-dropdown" tabindex="0" (click)="toggleDropdown()" (blur)="closeDropdown()">
+      <button class="icon-btn" title="Profile">
+        <i class="bi bi-person-circle"></i>
+      </button>
+      <div class="dropdown-menu" *ngIf="dropdownOpen">
+        <button (click)="openProfile('view')">View Profile</button>
+        <button (click)="openProfile('edit')">Edit Profile</button>
+      </div>
+    </div>
+
+    <button class="icon-btn" (click)="logout()" title="Logout">
+      <i class="bi bi-box-arrow-right"></i>
+    </button>
+  </div>
+</header>
+
+<main class="dashboard-main">
+  <router-outlet></router-outlet>
+</main>

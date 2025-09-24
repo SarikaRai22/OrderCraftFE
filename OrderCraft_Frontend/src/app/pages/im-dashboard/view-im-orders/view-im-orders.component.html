@@ -1,0 +1,208 @@
+<div class="orders-container">
+  <!-- Header Section -->
+  <div class="header-section">
+    <div class="title-section">
+      <h2><i class="bi bi-box-seam me-2"></i> Inventory Management - Purchase Orders</h2>
+      <div class="stats" *ngIf="!isLoading">
+        <span class="stat-item">
+          <strong>{{ getTotalOrders() }}</strong> Orders
+        </span>
+        <span class="stat-item">
+          <strong>{{ getTotalItems() }}</strong> Items
+        </span>
+      </div>
+    </div>
+    <button class="btn btn-primary d-flex align-items-center" (click)="refreshData()" [disabled]="isLoading">
+      <i *ngIf="isLoading" class="bi bi-arrow-clockwise me-2 spin"></i>
+      <i *ngIf="!isLoading" class="bi bi-arrow-clockwise me-2"></i>
+      <span *ngIf="isLoading">Loading...</span>
+      <span *ngIf="!isLoading">Refresh</span>
+    </button>
+  </div>
+
+  <!-- Error Message -->
+  <div class="alert alert-danger" *ngIf="error">
+    <strong><i class="bi bi-exclamation-triangle me-1"></i> Error:</strong> {{ error }}
+    <button class="btn btn-sm btn-outline-danger ms-2" (click)="refreshData()">
+      <i class="bi bi-arrow-clockwise me-1"></i> Try Again
+    </button>
+  </div>
+
+  <!-- Loading Spinner -->
+  <div class="loading-spinner" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Loading orders and inventory data...</p>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!isLoading && !error">
+    <!-- Filters Section -->
+    <div class="filters-section">
+      <h3><i class="bi bi-funnel me-1"></i> Filters</h3>
+      <div class="filter-grid">
+        <div class="filter-group">
+          <label>Order ID:</label>
+          <input
+            type="text"
+            placeholder="Search by Order ID"
+            [(ngModel)]="filters.orderId"
+            (input)="applyFilters()"
+            class="form-control">
+        </div>
+
+        <!-- ❌ REMOVED User ID filter group -->
+
+        <div class="filter-group">
+          <label>Product Name:</label>
+          <input
+            type="text"
+            placeholder="Search by Product Name"
+            [(ngModel)]="filters.productName"
+            (input)="applyFilters()"
+            class="form-control">
+        </div>
+        <div class="filter-actions">
+          <button class="btn btn-outline-secondary" (click)="clearFilters()">
+            <i class="bi bi-x-circle me-1"></i>Clear All Filters
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="table-section">
+      <div class="table-wrapper">
+        <table class="orders-table">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <!-- ❌ REMOVED User ID column header -->
+              <th>Product Name</th>
+              <th>Requested Qty</th>
+              <th>Current Stock</th>
+              <th>Status</th>
+              <!-- ✅ Production Scheduling column -->
+              <th>Production Scheduling</th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngFor="let order of filteredOrders; trackBy: trackByOrderId">
+              <tr *ngFor="let item of order.items; let i = index; trackBy: trackByItem"
+                  [class]="'stock-status-' + getStockStatus(item.currentStock, item.quantity)">
+
+                <!-- Order ID - only show on first row of each order -->
+                <td *ngIf="i === 0"
+                    [attr.rowspan]="order.items.length"
+                    class="order-id-cell">
+                  <strong>#{{ order.orderId }}</strong>
+                </td>
+
+                <!-- ❌ REMOVED User ID cell -->
+
+                <!-- Product Name -->
+                <td class="product-name-cell">
+                  {{ item.productName }}
+                </td>
+
+                <!-- Requested Quantity -->
+                <td class="quantity-cell">
+                  {{ item.quantity }}
+                </td>
+
+                <!-- Current Stock -->
+                <td class="stock-cell">
+                  <span class="stock-badge"
+                        [class]="'badge-' + getStockStatus(item.currentStock, item.quantity)">
+                    {{ item.currentStock }}
+                  </span>
+                </td>
+
+                <!-- Status -->
+                <td class="status-cell">
+                  <span class="status-badge"
+                        [class]="'badge-' + getStockStatus(item.currentStock, item.quantity)">
+                    <ng-container [ngSwitch]="getStockStatus(item.currentStock, item.quantity)">
+                      <span *ngSwitchCase="'out-of-stock'" class="text-danger">
+                        <i class="bi bi-x-circle me-1"></i> Out of Stock
+                      </span>
+                      <span *ngSwitchCase="'insufficient-stock'" class="text-warning">
+                        <i class="bi bi-exclamation-triangle me-1"></i> Insufficient
+                      </span>
+                      <span *ngSwitchCase="'low-stock'" class="text-warning">
+                        <i class="bi bi-exclamation-circle me-1"></i> Low Stock
+                      </span>
+                      <span *ngSwitchCase="'sufficient-stock'" class="text-success">
+                        <i class="bi bi-check-circle me-1"></i> Available
+                      </span>
+                    </ng-container>
+                  </span>
+                </td>
+
+                <!-- ✅ Production Scheduling cell -->
+                <td class="schedule-cell">
+                  <!-- <button 
+                    class="btn btn-sm btn-outline-primary"
+                    (click)="scheduleProduction(order.orderId, item)"
+                    [disabled]="getStockStatus(item.currentStock, item.quantity) === 'sufficient-stock'">
+                    <i class="bi bi-calendar-check"></i> Schedule
+                  </button> -->
+                  <button
+                  class="btn btn-sm btn-outline-primary"
+                  (click)="scheduleProduction(order.orderId, item)"
+                  [disabled]="getStockStatus(item.currentStock, item.quantity) === 'sufficient-stock' 
+                              || isProductScheduled.get(item.productId)">
+                  <i class="bi bi-calendar-check"></i>
+                  {{ isProductScheduled.get(item.productId) ? 'Order Scheduled' : 'Schedule' }}
+                </button>
+
+                </td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+
+        <!-- No Data Message -->
+        <div class="no-data" *ngIf="filteredOrders.length === 0">
+          <div class="no-data-content">
+            <h3>📭 No Orders Found</h3>
+            <p *ngIf="orders.length === 0">There are no purchase orders to display.</p>
+            <p *ngIf="orders.length > 0">No orders match your current filters.</p>
+            <button *ngIf="orders.length > 0" class="btn btn-primary" (click)="clearFilters()">
+              Clear Filters
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ Production Scheduling Modal -->
+<div class="modal" *ngIf="showScheduleModal">
+  <div class="modal-content">
+    <h3><i class="bi bi-calendar-check"></i> Schedule Production</h3>
+    <p><strong>Order #{{ selectedOrderId }}</strong></p>
+    <p>Product: {{ selectedProduct?.productName }}</p>
+    
+    <label>Required Quantity:</label>
+    <input type="number" [(ngModel)]="scheduleData.quantity" class="form-control">
+  <div class="date-row">
+    <div class="form-group">
+      <label>Start Date:</label>
+      <input type="date" [(ngModel)]="scheduleData.startDate" class="form-control">
+    </div>
+    <div class="form-group">
+      <label>End Date:</label>
+      <input type="date" [(ngModel)]="scheduleData.endDate" class="form-control">
+    </div>
+     <div class="form-group">
+    <label>Remarks:</label>
+    <textarea [(ngModel)]="scheduleData.remarks" class="form-control"></textarea></div>
+  </div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" (click)="confirmSchedule()">Confirm</button>
+      <button class="btn btn-secondary" (click)="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+

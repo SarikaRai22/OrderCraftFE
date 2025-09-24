@@ -1,0 +1,115 @@
+<div class="reports-container">
+  <h2 class="page-title">Inventory Reports</h2>
+
+  <form [formGroup]="reportForm" class="report-form">
+    <!-- Report Type -->
+    <div class="form-group">
+      <label for="reportType">Report Type</label>
+      <select id="reportType" formControlName="reportType">
+        <option value="">-- Select --</option>
+        <option value="stock">Stock Report</option>
+        <option value="transaction">Transaction Report</option>
+        <option value="production">Production Report</option>
+      </select>
+    </div>
+
+    <!-- Category Filter -->
+    <div
+      class="form-group"
+      *ngIf="reportForm.value.reportType === 'stock' || reportForm.value.reportType === 'transaction' || reportForm.value.reportType === 'production'">
+      <label for="categoryId">Category (optional)</label>
+      <select id="categoryId" formControlName="categoryId">
+        <option value="">-- All Categories --</option>
+        <option *ngFor="let cat of categories" [value]="cat.categoriesId">
+          {{ cat.categoryName }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Date Filters -->
+    <div
+      class="form-row"
+      *ngIf="reportForm.value.reportType === 'transaction' || reportForm.value.reportType === 'production'">
+      <div class="form-group">
+        <label for="startDate">Start Date</label>
+        <input id="startDate" type="date" formControlName="startDate" />
+      </div>
+      <div class="form-group">
+        <label for="endDate">End Date</label>
+        <input id="endDate" type="date" formControlName="endDate" />
+      </div>
+    </div>
+
+    <!-- Transaction Type -->
+<div class="form-group" *ngIf="reportForm.value.reportType === 'transaction'">
+  <label for="transactionType">Transaction Type</label>
+  <select id="transactionType" formControlName="transactionType">
+    <option value="">-- All --</option>
+    <option *ngFor="let t of transactionTypes" [value]="t">{{ t }}</option>
+  </select>
+</div>
+
+
+
+    <!-- Production Status -->
+    <div class="form-group" *ngIf="reportForm.value.reportType === 'production'">
+      <label for="status">Status</label>
+      <select id="status" formControlName="status">
+        <option value="">-- All --</option>
+        <option *ngFor="let s of productionStatuses" [value]="s">{{ s }}</option>
+      </select>
+    </div>
+
+    <!-- Export Format -->
+    <div class="form-group">
+      <label for="format">Export Format</label>
+      <select id="format" formControlName="format">
+        <option value="pdf">PDF</option>
+        <option value="csv">CSV</option>
+      </select>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="button-row">
+      <button type="button" class="btn primary" (click)="onPreview()">Preview</button>
+      <button type="button" class="btn secondary" (click)="onExport()">Download</button>
+    </div>
+  </form>
+
+  <!-- Error / Loading -->
+  <div *ngIf="errorMsg" class="error-message">{{ errorMsg }}</div>
+  <div *ngIf="loading" class="loading-message">Loading report...</div>
+
+  <!-- Preview Table -->
+<!-- Preview Table -->
+<div class="preview-container" *ngIf="previewClicked && !loading && !errorMsg">
+  <h3 class="section-title">Preview</h3>
+
+  <!-- Case 1: Data available -->
+  <table class="report-table" *ngIf="previewData.length > 0; else noDataTemplate">
+    <thead>
+      <tr>
+        <th *ngFor="let col of columnMapping">{{ col.label }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let row of paginatedData">
+        <td *ngFor="let col of columnMapping">{{ row[col.key] }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Case 2: No data -->
+  <ng-template #noDataTemplate>
+    <div class="no-data-message">
+      No data found for the selected filters.
+    </div>
+  </ng-template>
+
+  <!-- Pagination only if there’s data -->
+  <div class="pagination-controls" *ngIf="previewData.length > 0">
+    <button class="btn small" (click)="prevPage()" [disabled]="currentPage === 1">Previous</button>
+    <span>Page {{ currentPage }} of {{ totalPages }}</span>
+    <button class="btn small" (click)="nextPage()" [disabled]="currentPage === totalPages">Next</button>
+  </div>
+</div>

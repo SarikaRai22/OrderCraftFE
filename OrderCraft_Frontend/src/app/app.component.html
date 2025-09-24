@@ -1,0 +1,9 @@
+<router-outlet></router-outlet>
+
+<!-- Session warning dialog -->
+<app-session-warning-dialog
+  [visible]="showWarning"
+  [countdown]="countdown"
+  (stayLoggedIn)="onStayLoggedIn()"
+  (logout)="onLogout()">
+</app-session-warning-dialog>

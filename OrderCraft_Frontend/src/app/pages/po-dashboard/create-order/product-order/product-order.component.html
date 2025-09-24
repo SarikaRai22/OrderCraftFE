@@ -1,0 +1,305 @@
+<div *ngIf="!orderPlaced" class="order-form-container">
+  <div class="form-header">
+    <h2>Product Order Form</h2>
+  </div>
+
+  <form #orderForm="ngForm" (ngSubmit)="submitOrder()" novalidate class="order-form">
+
+
+
+<!-- Existing Customer Search -->
+<div class="form-group" style="position: relative;">
+  <label for="existingCustomer"><h3>Select Existing Customer</h3></label>
+  <input
+    type="text"
+    id="existingCustomer"
+    [(ngModel)]="selectedCustomerEmail"
+    name="existingCustomer"
+    (input)="onCustomerEmailChange()"
+    placeholder="Type email to search"
+    autocomplete="off"
+    class="form-control sm-input">
+
+  <ul *ngIf="customerSuggestions.length > 0" class="suggestions-list">
+    <li *ngFor="let cust of customerSuggestions" (click)="selectCustomer(cust)">
+      {{ cust.customerEmail }} - {{ cust.customerName }}
+    </li>
+  </ul>
+</div>
+
+
+    <!-- Customer Details Section -->
+    <div class="customer-section">
+      <h3>Customer Details</h3>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="customerName">Name <span class="required">*</span></label>
+          <input
+            type="text"
+            id="customerName"
+            [(ngModel)]="customer.customerName"
+            name="customerName"
+            #customerName="ngModel"
+            required
+            minlength="2"
+            [class.invalid]="customerName.invalid && customerName.touched"
+            [class.valid]="customerName.valid && customerName.touched">
+          <div class="error-message" *ngIf="customerName.invalid && customerName.touched">
+            <span *ngIf="customerName.errors?.['required']">Name is required</span>
+            <span *ngIf="customerName.errors?.['minlength']">Name must be at least 2 characters</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="customerEmail">Email <span class="required">*</span></label>
+          <input
+            type="email"
+            id="customerEmail"
+            [(ngModel)]="customer.customerEmail"
+            name="customerEmail"
+            #customerEmail="ngModel"
+            required
+            email
+            [class.invalid]="customerEmail.invalid && customerEmail.touched"
+            [class.valid]="customerEmail.valid && customerEmail.touched">
+          <div class="error-message" *ngIf="customerEmail.invalid && customerEmail.touched">
+            <span *ngIf="customerEmail.errors?.['required']">Email is required</span>
+            <span *ngIf="customerEmail.errors?.['email']">Please enter a valid email address</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="customerPhone">Phone <span class="required">*</span></label>
+          <input
+            type="tel"
+            id="customerPhone"
+            [(ngModel)]="customer.customerPhone"
+            name="customerPhone"
+            #customerPhone="ngModel"
+            required
+            pattern="^[0-9]{10}$"
+            maxlength="10"
+            placeholder="Enter 10-digit mobile number"
+            [class.invalid]="customerPhone.invalid && customerPhone.touched"
+            [class.valid]="customerPhone.valid && customerPhone.touched">
+          <div class="error-message" *ngIf="customerPhone.invalid && customerPhone.touched">
+            <span *ngIf="customerPhone.errors?.['required']">Phone number is required</span>
+            <span *ngIf="customerPhone.errors?.['pattern']">Please enter a valid 10-digit mobile number</span>
+          </div>
+        </div>
+
+        <div class="form-group full-width">
+          <label for="customerAddress">Address <span class="required">*</span></label>
+          <textarea
+            id="customerAddress"
+            [(ngModel)]="customer.customerAddress"
+            name="customerAddress"
+            #customerAddress="ngModel"
+            required
+            minlength="10"
+            rows="3"
+            [class.invalid]="customerAddress.invalid && customerAddress.touched"
+            [class.valid]="customerAddress.valid && customerAddress.touched"></textarea>
+          <div class="error-message" *ngIf="customerAddress.invalid && customerAddress.touched">
+            <span *ngIf="customerAddress.errors?.['required']">Address is required</span>
+            <span *ngIf="customerAddress.errors?.['minlength']">Address must be at least 10 characters</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Order Items Section -->
+    <div class="order-items-section">
+      <h3>Order Items</h3>
+
+      <div *ngFor="let item of items; let i = index" class="order-item">
+        <div class="item-row">
+
+          <!-- Product Dropdown -->
+          <div class="form-group">
+            <label>Product <span class="required">*</span></label>
+            <select
+              [(ngModel)]="item.productId"
+              name="product-{{i}}"
+              #productSelect="ngModel"
+              (change)="onProductChange(i)"
+              required
+              [class.invalid]="productSelect.invalid && productSelect.touched"
+              [class.valid]="productSelect.valid && productSelect.touched">
+              <option [ngValue]="null">Select Product</option>
+
+
+                <option
+                *ngFor="let product of products"
+                [ngValue]="product.productsId"
+                [disabled]="isProductAlreadySelected(product.productsId, i)">
+                {{ product.productsName }}
+                </option>
+
+
+
+
+            </select>
+            <div class="error-message" *ngIf="productSelect.invalid && productSelect.touched">
+              Please select a product
+            </div>
+          </div>
+
+          <!-- Unit Price -->
+          <div class="form-group">
+            <label>Unit Price</label>
+            <div class="unit-price" *ngIf="item.unitPrice != null">
+              ₹{{ item.unitPrice }}
+            </div>
+            <div class="unit-price placeholder" *ngIf="item.unitPrice == null">
+              -
+            </div>
+          </div>
+
+          <!-- Quantity Input -->
+          <div class="form-group">
+            <label>Quantity <span class="required">*</span></label>
+            <input title="quantity"
+              type="number"
+              [(ngModel)]="item.quantity"
+              name="quantity-{{i}}"
+              #quantityInput="ngModel"
+              min="1"
+              max="999"
+              (input)="onQuantityChange(i)"
+              required
+              [class.invalid]="quantityInput.invalid && quantityInput.touched"
+              [class.valid]="quantityInput.valid && quantityInput.touched">
+            <div class="error-message" *ngIf="quantityInput.invalid && quantityInput.touched">
+              <span *ngIf="quantityInput.errors?.['required']">Quantity is required</span>
+              <span *ngIf="quantityInput.errors?.['min']">Minimum quantity is 1</span>
+            </div>
+          </div>
+
+          <!-- Item Total -->
+          <div class="form-group">
+            <label>Total</label>
+            <div class="item-total" *ngIf="item.totalPrice != null">
+              ₹{{ item.totalPrice }}
+            </div>
+            <div class="item-total placeholder" *ngIf="item.totalPrice == null">
+              -
+            </div>
+          </div>
+
+          <!-- Remove Button -->
+          <div class="form-group remove-btn-group">
+            <button
+              type="button"
+              class="remove-btn"
+              (click)="removeItem(i)"
+              *ngIf="items.length > 1"
+              title="Remove Item">
+              ✕
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <button type="button" class="add-item-btn" (click)="addItem()">
+        + Add Another Product
+      </button>
+    </div>
+
+    <!-- Order Summary -->
+    <div class="summary-section">
+      <h3>Order Summary</h3>
+      <div class="summary-content">
+        <div class="summary-row">
+          <span>Subtotal:</span>
+          <span>₹{{ getSubtotal() }}</span>
+        </div>
+        <div class="summary-row">
+          <span>Tax (18%):</span>
+          <span>₹{{ getTax() }}</span>
+        </div>
+        <div class="summary-row total">
+          <span>Total Amount:</span>
+          <span>₹{{ getTotal() }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="submit-section">
+      <!-- <button
+        type="submit"
+        class="submit-btn"
+        [disabled]="orderForm.invalid || items.length === 0">
+        Submit Order
+      </button> -->
+
+
+      <button
+      type="button"
+      class="submit-btn"
+      [disabled]="orderForm.invalid || items.length === 0"
+      (click)="showConfirmation = true">
+      Submit Order
+    </button>
+
+
+      <!-- Form validation status -->
+      <div class="form-warning" *ngIf="orderForm.invalid && orderForm.touched">
+        Please fill all required fields correctly before submitting.
+      </div>
+    </div>
+  </form>
+</div>
+
+
+
+
+<div *ngIf="orderPlaced" class="order-success-box">
+  <h2> Product Order Placed Successfully!</h2>
+
+  <div class="order-details">
+    <p><strong>Customer:</strong> {{ placedOrderDetails.customer.customerName }}</p>
+    <p><strong>Email:</strong> {{ placedOrderDetails.customer.customerEmail }}</p>
+    <p><strong>Phone:</strong> {{ placedOrderDetails.customer.customerPhone }}</p>
+    <p><strong>Address:</strong> {{ placedOrderDetails.customer.customerAddress }}</p>
+
+    <h3>Items Ordered:</h3>
+    <ul>
+      <li *ngFor="let item of placedOrderDetails.items">
+        {{ getProductName(item.productId) }} - Qty: {{ item.quantity }}
+      </li>
+    </ul>
+
+    <p><strong>Subtotal:</strong> ₹{{ placedOrderDetails.subtotal }}</p>
+    <p><strong>Tax (18%):</strong> ₹{{ placedOrderDetails.tax }}</p>
+    <p><strong>Total:</strong> ₹{{ placedOrderDetails.orderTotal }}</p>
+  </div>
+
+  <div class="order-actions">
+    <!-- <button (click)="trackOrder()">Track Order</button> -->
+    <button (click)="viewInvoice()">View Invoice</button>
+    <button (click)="resetForm()">Place Another Order</button>
+  </div>
+</div>
+
+
+
+<!-- Confirmation Popup -->
+<div *ngIf="showConfirmation" class="confirmation-overlay">
+  <div class="confirmation-box">
+    <p>Are you sure you want to place this order?</p>
+    <div class="confirmation-buttons">
+      <button (click)="confirmSubmitOrder()">Yes, Place Order</button>
+      <button (click)="cancelSubmit()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+
+
+
+

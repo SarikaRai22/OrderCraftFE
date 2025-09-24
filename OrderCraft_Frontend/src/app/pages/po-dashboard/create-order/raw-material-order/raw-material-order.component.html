@@ -1,0 +1,211 @@
+<div class="raw-material-container">
+  <!-- Order Form Section -->
+  <div class="order-form-section" *ngIf="!showConfirmation">
+    <div class="form-header">
+      <h2>Raw Material Order</h2>
+    </div>
+
+    <form #rawMaterialForm="ngForm" class="raw-material-form">
+      
+      <!-- Raw Material Items -->
+      <div class="items-section">
+        <h3>Add Raw Materials</h3>
+        
+        <div *ngFor="let item of rawMaterialItems; let i = index" class="raw-material-item">
+          <div class="item-header">
+            <span class="item-number">Item {{ i + 1 }}</span>
+            <button type="button" class="remove-btn" (click)="removeItem(i)" *ngIf="rawMaterialItems.length > 1">
+              ✕
+            </button>
+          </div>
+
+          <div class="item-content">
+            <!-- Product Selection -->
+            <div class="form-group">
+              <label for="product-{{i}}">Product <span class="required">*</span></label>
+              <select 
+                id="product-{{i}}"
+                [(ngModel)]="item.productId" 
+                name="product-{{i}}"
+                #productSelect="ngModel"
+                (change)="onProductChange(i)"
+                required
+                [class.invalid]="productSelect.invalid && productSelect.touched"
+                [class.valid]="productSelect.valid && productSelect.touched">
+                <option [ngValue]="null">-- Select Product --</option>
+                <option *ngFor="let product of products" [ngValue]="product.productsId">
+                  {{ product.productsName }}
+                </option>
+              </select>
+              <div class="error-message" *ngIf="productSelect.invalid && productSelect.touched">
+                Please select a product
+              </div>
+            </div>
+
+            <!-- Raw Material Selection -->
+            <div class="form-group">
+              <label for="rawMaterial-{{i}}">Raw Material <span class="required">*</span></label>
+              <select 
+                id="rawMaterial-{{i}}"
+                [(ngModel)]="item.rawMaterialId" 
+                name="rawMaterial-{{i}}"
+                #rawMaterialSelect="ngModel"
+                (change)="onRawMaterialChange(i)"
+                required
+                [disabled]="!item.rawMaterials || item.rawMaterials.length === 0"
+                [class.invalid]="rawMaterialSelect.invalid && rawMaterialSelect.touched"
+                [class.valid]="rawMaterialSelect.valid && rawMaterialSelect.touched">
+                <option [ngValue]="null">-- Select Raw Material --</option>
+                <option 
+                  *ngFor="let rm of item.rawMaterials"
+                  [ngValue]="rm.rwId"
+                  [disabled]="isRawMaterialSelectedElsewhere(rm.rwId, i)">
+                  {{ rm.rwName }}
+                  <span *ngIf="isRawMaterialSelectedElsewhere(rm.rwId, i)"> (Already Selected)</span>
+                </option>
+              </select>
+              <div class="error-message" *ngIf="rawMaterialSelect.invalid && rawMaterialSelect.touched">
+                Please select a raw material
+              </div>
+            </div>
+
+            <!-- Quantity Input -->
+            <div class="form-group">
+              <label for="quantity-{{i}}">Quantity <span class="required">*</span></label>
+              <input 
+                type="number" 
+                id="quantity-{{i}}"
+                [(ngModel)]="item.quantity" 
+                name="quantity-{{i}}"
+                #quantityInput="ngModel"
+                (ngModelChange)="updateTotalPrice(i)" 
+                min="1" 
+                max="9999"
+                required
+                [class.invalid]="quantityInput.invalid && quantityInput.touched"
+                [class.valid]="quantityInput.valid && quantityInput.touched" />
+              <div class="error-message" *ngIf="quantityInput.invalid && quantityInput.touched">
+                <span *ngIf="quantityInput.errors?.['required']">Quantity is required</span>
+                <span *ngIf="quantityInput.errors?.['min']">Minimum quantity is 1</span>
+              </div>
+            </div>
+
+            <!-- Price Information -->
+            <div class="price-info">
+              <div class="price-item" *ngIf="item.unitPrice > 0">
+                <label>Unit Price:</label>
+                <span class="price">₹{{ item.unitPrice }}</span>
+              </div>
+              
+              <div class="price-item total-price" *ngIf="item.unitPrice > 0 && item.quantity > 0">
+                <label>Total:</label>
+                <span class="price">₹{{ item.totalPrice }}</span>
+              </div>
+            </div>
+
+            <!-- Subtotal Display -->
+            <div class="subtotal" *ngIf="item.totalPrice > 0">
+              <strong>Subtotal: ₹{{ item.totalPrice }}</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add Item Button -->
+        <button type="button" class="add-item-btn" (click)="addRawMaterialToOrder()">
+          ➕ Add Another Item
+        </button>
+      </div>
+
+      <!-- Order Summary Table -->
+      <div class="order-summary" *ngIf="rawMaterialItems.length > 0">
+        <h3>Order Summary</h3>
+        <div class="table-container">
+          <table class="order-table">
+            <thead>
+              <tr>
+                <th>Raw Material</th>
+                <th>Quantity</th>
+                <th>Unit Price</th>
+                <th>Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of rawMaterialItems" [class.incomplete]="!item.rawMaterialName || !item.quantity || !item.unitPrice">
+                <td>{{ item.rawMaterialName || '-' }}</td>
+                <td>{{ item.quantity || '-' }}</td>
+                <td>{{ item.unitPrice ? '₹' + item.unitPrice : '-' }}</td>
+                <td>{{ item.totalPrice ? '₹' + item.totalPrice : '-' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Total Cost -->
+        <div class="total-cost">
+          <strong>Total Order Cost: ₹{{ getTotalOrderCost() }}</strong>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="submit-section">
+        <button 
+          type="button" 
+          class="submit-btn" 
+          (click)="prepareConfirmation()"
+          [disabled]="rawMaterialForm.invalid || rawMaterialItems.length === 0 || getTotalOrderCost() === 0">
+          Submit Order
+        </button>
+        
+        <div class="form-warning" *ngIf="rawMaterialForm.invalid && rawMaterialForm.touched">
+          Please fill all required fields correctly before submitting.
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Confirmation Page -->
+  <div class="confirmation-section" *ngIf="showConfirmation">
+    <div class="confirmation-header">
+      <h2>Confirm Raw Material Order</h2>
+      <p class="confirmation-subtitle">Please review your order details before final submission</p>
+    </div>
+
+    <div class="confirmation-content">
+      <div class="table-container">
+        <table class="confirmation-table">
+          <thead>
+            <tr>
+              <th>Supplier</th>
+              <th>Raw Material</th>
+              <th>Quantity</th>
+              <th>Unit Price</th>
+              <th>Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of confirmationData.items">
+              <td>{{ item.supplierName }}</td>
+              <td>{{ item.rawMaterialName }}</td>
+              <td>{{ item.quantity }}</td>
+              <td>₹{{ item.unitPrice }}</td>
+              <td>₹{{ item.totalPrice }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="confirmation-total">
+        <strong>Total Cost: ₹{{ confirmationData.totalCost }}</strong>
+      </div>
+
+      <div class="confirmation-actions">
+        <button class="confirm-btn" (click)="confirmOrderSubmission()">
+          ✅ Confirm & Submit
+        </button>
+        <button class="cancel-btn" (click)="showConfirmation = false">
+          ❌ Back to Edit
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

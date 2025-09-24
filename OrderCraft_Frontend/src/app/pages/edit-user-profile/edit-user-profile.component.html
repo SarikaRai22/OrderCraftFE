@@ -1,0 +1,100 @@
+<div class="edit-profile-container">
+  <h2>Edit Profile</h2>
+
+  <form [formGroup]="editForm" (ngSubmit)="onSubmit()">
+    <!-- Profile Image -->
+    <div class="form-group text-center">
+      <img [src]="profileImageUrl" alt="Profile Picture" class="profile-img" />
+    </div>
+
+    <!-- Full Name -->
+    <div class="form-group">
+      <label>Full Name</label>
+      <input type="text" formControlName="userFullName"
+             [class.invalid]="editForm.get('userFullName')?.invalid && editForm.get('userFullName')?.touched" />
+      <small *ngIf="editForm.get('userFullName')?.invalid && editForm.get('userFullName')?.touched">
+        Full name is required.
+      </small>
+    </div>
+
+    <!-- Email (editable) -->
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" formControlName="userEmail"
+             [class.invalid]="editForm.get('userEmail')?.invalid && editForm.get('userEmail')?.touched" />
+      <small *ngIf="editForm.get('userEmail')?.invalid && editForm.get('userEmail')?.touched">
+        Enter a valid email.
+      </small>
+    </div>
+
+    <!-- Mobile -->
+    <div class="form-group">
+      <label>Mobile</label>
+      <input type="text" formControlName="userMobile"
+             maxlength="10"
+             [class.invalid]="editForm.get('userMobile')?.invalid && editForm.get('userMobile')?.touched" />
+      <small *ngIf="editForm.get('userMobile')?.invalid && editForm.get('userMobile')?.touched">
+        Enter a valid 10-digit mobile number.
+      </small>
+    </div>
+
+    <!-- Username -->
+    <div class="form-group">
+      <label>Username</label>
+      <input type="text" formControlName="userName"
+             [class.invalid]="editForm.get('userName')?.invalid && editForm.get('userName')?.touched" />
+      <small *ngIf="editForm.get('userName')?.invalid && editForm.get('userName')?.touched">
+        Username is required.
+      </small>
+    </div>
+
+    <!-- Role (readonly) -->
+    <div class="form-group">
+      <label>Role</label>
+      <input type="text" formControlName="roleName" readonly />
+    </div>
+
+    <!-- Address Fields -->
+    <div class="form-group">
+      <label>Street</label>
+      <input type="text" formControlName="addressStreet" />
+    </div>
+    <div class="form-group">
+      <label>City</label>
+      <input type="text" formControlName="addressCity" />
+    </div>
+    <div class="form-group">
+      <label>State</label>
+      <input type="text" formControlName="addressState" />
+    </div>
+    <div class="form-group">
+      <label>Postal Code</label>
+      <input type="text" formControlName="addressPostalCode" />
+    </div>
+    <div class="form-group">
+      <label>Country</label>
+      <input type="text" formControlName="addressCountry" />
+    </div>
+
+    <!-- Password Fields -->
+    <div class="form-group">
+      <label>New Password</label>
+      <input type="password" formControlName="newPassword" placeholder="Leave empty to keep current password" />
+    </div>
+    <div class="form-group">
+      <label>Confirm Password</label>
+      <input type="password" formControlName="confirmPassword" placeholder="Confirm new password" />
+    </div>
+
+    <!-- Message -->
+    <div class="message" *ngIf="message">
+      {{ message }}
+    </div>
+
+    <!-- Buttons -->
+    <div class="form-actions">
+      <button type="submit" [disabled]="isLoading">Save</button>
+      <button type="button" (click)="onCancel()" class="cancel-btn">Cancel</button>
+    </div>
+  </form>
+</div>

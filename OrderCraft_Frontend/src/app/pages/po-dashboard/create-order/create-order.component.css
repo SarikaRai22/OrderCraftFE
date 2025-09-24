@@ -1,0 +1,25 @@
+.order-tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.order-tabs button {
+  padding: 0.5rem 1rem;
+  background-color: #e2e8f0;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.order-tabs button.active {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.order-content {
+  padding: 1rem;
+  border: 1px solid #cbd5e0;
+  border-radius: 8px;
+  background-color: #f8fafc;
+}

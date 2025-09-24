@@ -1,0 +1,119 @@
+<!-- po-dashboard-layout.component.html -->
+<div class="dashboard-layout">
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="sidebar-header">
+      <h3><i class=""></i> OrderCraft</h3>
+    </div>
+    <ul class="nav-links">
+      <li>
+        <a routerLink="/im-dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <i class="bi bi-speedometer2"></i> Dashboard
+        </a>
+      </li>
+      <li>
+        <a routerLink="/im-dashboard/product-categorization" routerLinkActive="active">
+          <i class="bi bi-diagram-3"></i> Product Categorization
+        </a>
+      </li>
+      <li>
+        <a routerLink="/im-dashboard/view-im-orders" routerLinkActive="active">
+          <i class="bi bi-card-checklist"></i> View Orders
+        </a>
+      </li>
+      <li>
+        <a routerLink="/im-dashboard/im-reports" routerLinkActive="active">
+          <i class="bi bi-download"></i> View Inventory Reports
+        </a>
+      </li>
+ 
+      <li (click)="logout()" class="logout-link"><a><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+ 
+    </ul>
+  </nav>
+ 
+  <!-- Main Content -->
+  <header class="header-bar">
+  <div class="top-right-icons">
+    <button class="icon-btn" (click)="goToDashboard()" title="Home">
+      <i class="bi bi-house-door"></i>
+    </button>
+    <!-- <button class="icon-btn" title="Settings">
+      <i class="bi bi-gear"></i>
+    </button> -->
+ 
+    <!-- Notifications -->
+            <div class="notifications-dropdown" tabindex="0" (click)="toggleNotifications()" (blur)="closeNotifications()">
+              <button class="icon-btn" title="Notifications">
+                <i class="bi bi-bell"></i>
+                <span class="notification-badge" *ngIf="unreadAlertsCount > 0">{{ unreadAlertsCount }}</span>
+              </button>
+              <div class="notifications-menu" *ngIf="notificationsOpen">
+                <div class="notifications-header">
+                  <h4>Stock Alerts</h4>
+                  <button class="mark-all-read" (click)="markAllAsRead()" *ngIf="alerts.length > 0">
+                    Mark all as read
+                  </button>
+                </div>
+                <div class="notifications-list">
+                  <!-- Loading -->
+                  <div *ngIf="isLoading" class="loading-notifications">
+                    <i class="bi bi-arrow-repeat spinner"></i> Loading alerts...
+                  </div>
+                  <!-- Error -->
+                  <div *ngIf="errorMessage" class="error-notifications">
+                    <i class="bi bi-exclamation-triangle"></i> {{ errorMessage }}
+                  </div>
+                  <!-- Alerts -->
+                  <div *ngFor="let alert of alerts" class="notification-item" [class.unread]="!alert.read">
+                    <div class="notification-content">
+                      <div class="alert-message">{{ alert.message }}</div>
+                      <div class="alert-details">
+                        <strong>{{ alert.productName }}</strong> (ID: {{ alert.productId }})<br>
+                        Current stock: {{ alert.currentStock }} | Min: {{ alert.minThreshold }} | Max: {{ alert.maxThreshold }}
+                      </div>
+                      <div class="alert-action">Restock quantity: {{ alert.restockQuantity }}</div>
+                      <div class="alert-status"
+                          [class.new]="alert.status === 'NEW'"
+                          [class.scheduled]="alert.status === 'SCHEDULED_FOR_PRODUCTION'">
+                        Status: {{ alert.status }}
+                      </div>
+                    </div>
+                    <div class="notification-time">{{ alert.timestamp | date: 'short' }}</div>
+                  </div>
+                  <!-- No alerts -->
+                  <div *ngIf="!isLoading && !errorMessage && alerts.length === 0" class="no-notifications">
+                    <i class="bi bi-check-circle"></i> No stock alerts at this time.
+                  </div>
+                </div>
+              </div>
+            </div>
+ 
+            <!-- Settings -->
+            <!-- <button class="icon-btn" title="Settings">
+              <i class="bi bi-gear"></i>
+            </button> -->
+ 
+      <!-- Profile -->
+ 
+    <div class="profile-dropdown" tabindex="0" (click)="toggleDropdown()" (blur)="closeDropdown()">
+      <button class="icon-btn" title="Profile">
+        <i class="bi bi-person-circle"></i>
+      </button>
+      <div class="dropdown-menu" *ngIf="dropdownOpen">
+        <button (click)="openProfile('view')">View Profile</button>
+        <button (click)="openProfile('edit')">Edit Profile</button>
+      </div>
+    </div>
+ 
+    <button class="icon-btn" (click)="logout()" title="Logout">
+      <i class="bi bi-box-arrow-right"></i>
+    </button>
+  </div>
+</header>
+ 
+<main class="dashboard-main">
+  <router-outlet></router-outlet>
+</main>
+ 
+ 

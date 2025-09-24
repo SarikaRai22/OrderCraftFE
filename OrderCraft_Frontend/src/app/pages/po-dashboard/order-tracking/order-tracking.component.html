@@ -1,0 +1,62 @@
+<div class="tracking-container">
+  <h2>Track Order</h2>
+  <div class="form-group">
+    <label for="orderId">Select Order: </label>
+    <select id="orderId" [(ngModel)]="selectedOrderId" (change)="fetchTrackingStatus()">
+      <option value="" disabled selected>Select an order</option>
+      <option *ngFor="let id of orders" [value]="id">{{ id }}</option>
+    </select>
+  </div>
+
+  <div class="text-end mt-3">
+    <button class="btn btn-primary" (click)="refreshOrders()">
+      <i class="bi bi-arrow-repeat"></i> Refresh Orders
+    </button>
+  </div>
+
+  <!-- 👇 Updated Horizontal Timeline -->
+  <div *ngIf="trackingInfo" class="timeline-wrapper mt-5">
+    <div class="timeline d-flex justify-content-between position-relative">
+
+      <div class="step text-center" *ngFor="let stage of stages; let i = index">
+
+        <!-- Top Circle with Check -->
+        <div class="circle-wrapper position-relative d-flex flex-column align-items-center">
+          <div
+            class="circle d-flex align-items-center justify-content-center mb-2"
+            [ngClass]="{ 'active': isStageActive(stage) }">
+            <i class="bi bi-check-lg"></i>
+          </div>
+
+          <!-- Line to next stage -->
+          <div
+            class="line position-absolute top-50 start-100 translate-middle-y"
+            *ngIf="i < stages.length - 1"
+            [ngClass]="{ 'active': isStageActive(stages[i + 1]) }">
+          </div>
+        </div>
+
+        <!-- Icon under each stage -->
+        <div class="stage-icon my-1"  >
+          <i [ngClass]="stageIcons[i]" class="stage-symbol fs-4"></i>
+        </div>
+
+        <!-- Stage Label -->
+        <div class="stage-label mt-1 fw-semibold"
+             [ngClass]="{ 'active': isStageActive(stage) }">
+          {{ stage }}
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Order Info -->
+  <div class="order-info mt-4" *ngIf="trackingInfo">
+    <p><strong>Order ID:</strong> {{ trackingInfo.orderId }}</p>
+    <p><strong>Status:</strong> {{ trackingInfo.currentStatus }}</p>
+    <p *ngIf="trackingInfo.currentStatus !== 'Delivered'">
+      <strong>Expected Delivery:</strong> {{ trackingInfo.expectedDeliveryDate | date: 'mediumDate' }}
+    </p>
+  </div>
+</div>

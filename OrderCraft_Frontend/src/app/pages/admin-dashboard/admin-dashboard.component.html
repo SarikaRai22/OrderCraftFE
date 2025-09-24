@@ -1,0 +1,16 @@
+
+  <!-- Main Content Area -->
+  <div class="main-content">
+    <!-- Header -->
+    <!-- Dashboard Cards -->
+    <div class="dashboard-container">
+      <h2>Welcome Admin</h2>
+      <div class="card-container">
+        <div class="card" (click)="navigate('register-user')">Register User</div>
+        <div class="card" (click)="navigate('view-all-users')">View All Users</div>
+      </div>
+    </div>
+
+    <!-- For nested routing -->
+    <router-outlet></router-outlet>
+  </div>

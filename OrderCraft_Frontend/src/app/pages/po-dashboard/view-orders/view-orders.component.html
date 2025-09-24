@@ -1,0 +1,157 @@
+<div class="orders-container">
+  <!-- Header -->
+  <div class="header-section">
+    <h2>All Orders</h2>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters">
+    <input
+      type="text"
+      placeholder="🔍 Search by Order ID"
+      [(ngModel)]="filters.orderId"
+      (input)="applyFilters()"
+    />
+
+    <label>From:</label>
+    <input type="date" [(ngModel)]="filters.startDate" (change)="applyFilters()" />
+
+    <label>To:</label>
+    <input type="date" [(ngModel)]="filters.endDate" (change)="applyFilters()" />
+
+    <select [(ngModel)]="filters.orderType" (change)="applyFilters()">
+      <option value="">All Orders</option>
+      <option value="product">Product Orders</option>
+      <option value="raw">Raw Material Orders</option>
+    </select>
+
+    <select [(ngModel)]="filters.status" (change)="applyFilters()">
+      <option value="">All Status</option>
+      <option value="Pending">Pending</option>
+      <option value="Shipped">Shipped</option>
+      <option value="In Transit">In Transit</option>
+      <option value="Delivered">Delivered</option>
+      <option value="Cancelled">Cancelled</option>
+    </select>
+
+    <button class="btn btn-outline-danger" (click)="clearFilters()">Clear Filters</button>
+  </div>
+
+  <!-- Orders Table -->
+  <div class="table-wrapper">
+    <table class="orders-table">
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Items</th>
+          <th>Order Date</th>
+          <th>Delivery Date</th>
+          <th>Status</th>
+          <th class="actions-col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let order of filteredOrders">
+          <td class="order-id">{{ order.poId }}</td>
+          <td>
+            <div *ngFor="let item of order.purchaseOrderItems">
+              <div *ngIf="item.product">
+                {{ item.product.productsName }} - {{ item.quantity }}
+              </div>
+              <div *ngIf="item.rawMaterial">
+                {{ item.rawMaterial.rwName }} - {{ item.quantity }}
+              </div>
+            </div>
+          </td>
+          <td>{{ order.poOrderDate || 'N/A' }}</td>
+          <td>{{ order.poExpectedDeliveryDate || 'N/A' }}</td>
+          <td>
+            <span class="status-badge" [class]="'status-' + (order.poDeliveryStatus || 'pending').toLowerCase()">
+              {{ order.poDeliveryStatus || 'N/A' }}
+            </span>
+          </td>
+          <td class="actions-cell">
+            <button class="btn btn-info" (click)="trackOrder(order.poId)" [disabled]="isButtonDisabled(order, 'track')">
+              Track
+            </button>
+            <button class="btn btn-warning" (click)="editOrder(order)" [disabled]="isButtonDisabled(order, 'edit')">
+              Edit
+            </button>
+            <button class="btn btn-danger" (click)="showCancelConfirmation(order.poId)" [disabled]="isButtonDisabled(order, 'cancel')">
+              Cancel
+            </button>
+            <button class="btn btn-success" *ngIf="hasProductItems(order)" (click)="viewInvoice(order.poId)" [disabled]="isButtonDisabled(order, 'invoice')">
+              Invoice
+            </button>
+            <button class="btn btn-secondary" (click)="returnOrder(order)" [disabled]="isButtonDisabled(order, 'return')">
+              Return
+            </button>
+
+            
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Edit Order Modal -->
+<div class="edit-order-modal" *ngIf="selectedOrderForEdit">
+  <div class="modal-overlay" (click)="cancelEdit()"></div>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Edit Order #{{ selectedOrderForEdit.poId }}</h3>
+      <button class="close-btn" (click)="cancelEdit()">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="deliveryDate">Expected Delivery Date:</label>
+        <input
+          id="deliveryDate"
+          type="date"
+          [(ngModel)]="selectedOrderForEdit.poExpectedDeliveryDate"
+          class="form-input"
+          [min]="minDate"
+        />
+      </div>
+
+      <div class="items-section">
+        <h4>Order Items</h4>
+        <div class="items-list">
+          <div class="item-card" *ngFor="let item of selectedOrderForEdit.purchaseOrderItems">
+            <div class="item-info">
+              <div *ngIf="item.product"><strong>Product:</strong> {{ item.product.productsName }}</div>
+              <div *ngIf="item.rawMaterial"><strong>Raw Material:</strong> {{ item.rawMaterial.rwName }}</div>
+            </div>
+
+            <div class="quantity-control">
+              <label for="quantity-{{ item.id }}">Quantity:</label>
+              <input id="quantity-{{ item.id }}" type="number" min="1" [(ngModel)]="item.quantity" class="quantity-input" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-primary" (click)="submitEditOrder()">Save Changes</button>
+      <button class="btn btn-secondary" (click)="cancelEdit()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- Cancel Confirmation Modal -->
+<div class="cancel-confirmation-modal" *ngIf="selectedOrderIdToCancel">
+  <div class="modal-overlay" (click)="cancelCancel()"></div>
+  <div class="modal-content">
+    <h3>Confirm Cancel</h3>
+    <p>Are you sure you want to cancel Order #{{ selectedOrderIdToCancel }}?</p>
+    <div class="modal-actions">
+      <button class="btn btn-danger" (click)="confirmCancel()">Yes, Cancel</button>
+      <button class="btn btn-secondary" (click)="cancelCancel()">No</button>
+    </div>
+  </div>
+</div>
+

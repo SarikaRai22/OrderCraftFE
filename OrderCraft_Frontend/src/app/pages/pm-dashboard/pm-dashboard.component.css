@@ -1,0 +1,17 @@
+.dashboard-navbar {
+  background-color: #343a40;
+  padding: 1rem;
+}
+.dashboard-navbar ul {
+  list-style: none;
+  display: flex;
+  gap: 1rem;
+}
+.dashboard-navbar li a {
+  color: white;
+  text-decoration: none;
+}
+.dashboard-navbar li a.active {
+  font-weight: bold;
+  text-decoration: underline;
+}

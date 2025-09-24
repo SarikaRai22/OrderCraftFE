@@ -1,0 +1,97 @@
+.im-dashboard-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: space-around;
+  padding: 20px;
+}
+
+/* Live indicator */
+.live-indicator {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  color: #444;
+  margin-bottom: 15px;
+}
+.live-indicator .dot {
+  height: 12px;
+  width: 12px;
+  background-color: #28a745; /* green = live */
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 8px;
+  animation: pulse 1.2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.9); opacity: 0.7; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.7; }
+}
+
+/* Chart cards */
+.chart-card {
+  flex: 1 1 320px;
+  max-width: 500px;
+  min-width: 320px;
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chart-card h3 {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+canvas {
+  width: 100% !important;
+  height: 300px !important;
+}
+
+/* Chart legends */
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 0.9rem;
+  justify-content: center;
+}
+
+.chart-legend .legend-box {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-right: 5px;
+  vertical-align: middle;
+  border-radius: 3px;
+}
+
+/* Legend colors */
+.legend-box.in-stock { background-color: rgba(54, 162, 235, 0.7); }
+.legend-box.low-stock { background-color: rgba(255, 99, 132, 0.8); }
+.legend-box.critical-stock { background-color: rgba(255, 0, 0, 0.8); }
+.legend-box.category-1 { background-color: rgba(255, 99, 132, 0.7); }
+.legend-box.category-2 { background-color: rgba(54, 162, 235, 0.7); }
+.legend-box.category-3 { background-color: rgba(255, 206, 86, 0.7); }
+
+
+.date-row {
+  display: flex;
+  gap: 20px; /* space between fields */
+  align-items: center;
+}
+
+.date-row .form-group {
+  flex: 1; /* make both take equal width */
+  display: flex;
+  flex-direction: column;
+}

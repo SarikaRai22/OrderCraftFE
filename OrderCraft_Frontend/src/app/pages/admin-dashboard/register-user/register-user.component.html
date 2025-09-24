@@ -1,0 +1,89 @@
+<!-- Background wrapper -->
+<div class="background-split">
+  <div class="registration-wrapper">
+    <div class="form-image">
+      <img src="assets/user_registration2.jpg" alt="Inventory Manager" />
+    </div>
+
+    <div class="form-container">
+      <h2 class="form-title">Register New User</h2>
+
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+        <div class="user-details">
+          <!-- Full Name -->
+          <div class="input-box"
+              [ngClass]="{
+                'has-error': isInvalid('userFullName'),
+                'has-success': isValid('userFullName')
+              }">
+            <span class="details">Full Name <span class="required">*</span></span>
+            <input type="text" formControlName="userFullName" title="userFullName" />
+            <small *ngIf="showError('userFullName', 'required')">Full name is required</small>
+          </div>
+
+          <!-- Username -->
+          <div class="input-box"
+              [ngClass]="{
+                'has-error': isInvalid('userName'),
+                'has-success': isValid('userName')
+              }">
+            <span class="details">Username <span class="required">*</span></span>
+            <input type="text" formControlName="userName" title="userName" />
+            <small *ngIf="showError('userName', 'required')">Username is required</small>
+          </div>
+
+          <!-- Email -->
+          <div class="input-box"
+              [ngClass]="{
+                'has-error': isInvalid('userEmail'),
+                'has-success': isValid('userEmail')
+              }">
+            <span class="details">Email <span class="required">*</span></span>
+            <input type="email" formControlName="userEmail" title="userEmail"/>
+            <small *ngIf="showError('userEmail', 'required')">Email is required</small>
+            <small *ngIf="showError('userEmail', 'email')">Invalid email format</small>
+          </div>
+
+          <!-- Mobile -->
+          <div class="input-box"
+              [ngClass]="{
+                'has-error': isInvalid('userMobile'),
+                'has-success': isValid('userMobile')
+              }">
+            <span class="details">Mobile <span class="required">*</span></span>
+            <input type="text" formControlName="userMobile" title="userMobile" />
+            <small *ngIf="showError('userMobile', 'required')">Mobile number is required</small>
+            <small *ngIf="showError('userMobile', 'pattern')">Invalid mobile number</small>
+          </div>
+
+          <!-- Role (Nested Form Group) -->
+          <div formGroupName="role" class="input-box"
+              [ngClass]="{
+                'has-error': isInvalid('role.roleName'),
+                'has-success': isValid('role.roleName')
+              }">
+            <span class="details">Role <span class="required">*</span></span>
+            <select formControlName="roleName" (change)="onRoleChange($event)" title="role.roleName">
+              <option value="">Select Role</option>
+              <option *ngFor="let option of roleOptions" [value]="option.value">{{ option.label }}</option>
+            </select>
+            <small *ngIf="showError('role.roleName', 'required')">Role is required</small>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="form-button">
+          <button type="submit">Register</button>
+        </div>
+      </form>
+
+      <!-- Success & Error Messages -->
+      <div *ngIf="successMessage" class="success">
+        {{ successMessage }}
+      </div>
+      <div *ngIf="errorMessage" class="error">
+        {{ errorMessage }}
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,290 @@
+<div class="user-management-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <h2 *ngIf="!editingUser" class="page-title">
+      <i class="bi bi-people-fill title-icon"></i>
+      All Users
+    </h2>
+    <h2 *ngIf="editingUser" class="page-title">
+      <i class="bi bi-pencil-square title-icon"></i>
+      Edit User
+    </h2>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMessage" class="alert alert-error">
+    <i class="bi bi-exclamation-triangle-fill alert-icon"></i>
+    {{ errorMessage }}
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid" *ngIf="users.length > 0 && !editingUser">
+    <div class="stat-card total">
+      <i class="bi bi-people-fill stat-icon"></i>
+      <div class="stat-content">
+        <div class="stat-number">{{ totalUsers }}</div>
+        <div class="stat-label">Total Users</div>
+      </div>
+    </div>
+
+    <div class="stat-card admin">
+      <i class="bi bi-shield-lock-fill stat-icon"></i>
+      <div class="stat-content">
+        <div class="stat-number">{{ adminCount }}</div>
+        <div class="stat-label">Admins</div>
+      </div>
+    </div>
+
+    <div class="stat-card po">
+      <i class="bi bi-cart-fill stat-icon"></i>
+      <div class="stat-content">
+        <div class="stat-number">{{ poCount }}</div>
+        <div class="stat-label">Procurement Officers</div>
+      </div>
+    </div>
+
+    <div class="stat-card im">
+      <i class="bi bi-box-fill stat-icon"></i>
+      <div class="stat-content">
+        <div class="stat-number">{{ imCount }}</div>
+        <div class="stat-label">Inventory Managers</div>
+      </div>
+    </div>
+
+    <div class="stat-card pm">
+      <i class="bi bi-building stat-icon"></i>
+      <div class="stat-content">
+        <div class="stat-number">{{ pmCount }}</div>
+        <div class="stat-label">Production Managers</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search and Filter Section -->
+  <div class="filter-section" *ngIf="!editingUser">
+    <div class="filter-card">
+      <div class="filter-row">
+        <div class="filter-group">
+          <label class="filter-label">
+            <i class="bi bi-search label-icon"></i>
+            Search by Username
+          </label>
+          <input
+            type="text"
+            [(ngModel)]="searchTerm"
+            placeholder="Enter username to search..."
+            class="search-input"
+          />
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label">
+            <i class="bi bi-tag label-icon"></i>
+            Filter by Role
+          </label>
+          <select [(ngModel)]="selectedRole" class="role-select" title="role-select">
+            <option value="">All Roles</option>
+            <option value="ADMIN">Admin</option>
+            <option value="PO">Procurement Officer</option>
+            <option value="IM">Inventory Manager</option>
+            <option value="PM">Production Manager</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feedback Messages -->
+  <div *ngIf="feedbackMessage" class="alert" [class.alert-success]="isSuccess" [class.alert-error]="!isSuccess">
+    <i class="alert-icon" [class.bi]="isSuccess ? 'bi-check-circle-fill' : 'bi-x-circle-fill'"></i>
+    {{ feedbackMessage }}
+    <button *ngIf="canUndo" (click)="undoDelete()" class="undo-btn">
+      <i class="bi bi-arrow-counterclockwise"></i> Undo
+    </button>
+  </div>
+
+  <!-- User Table -->
+  <div class="table-container" *ngIf="users.length > 0 && !editingUser">
+    <div class="table-header">
+      <h3 class="table-title">User Directory</h3>
+      <div class="table-actions">
+        <span class="user-count">{{ filteredUsers.length }} users found</span>
+      </div>
+    </div>
+
+    <div class="table-wrapper">
+      <table class="user-table">
+        <thead>
+          <tr>
+            <th class="th-name">
+              <i class="bi bi-person-fill th-icon"></i>
+              Full Name
+            </th>
+            <th class="th-username">
+              <i class="bi bi-person-badge-fill th-icon"></i>
+              Username
+            </th>
+            <th class="th-phone">
+              <i class="bi bi-phone-fill th-icon"></i>
+              Phone
+            </th>
+            <th class="th-role">
+              <i class="bi bi-briefcase-fill th-icon"></i>
+              Role
+            </th>
+            <th class="th-actions">
+              <i class="bi bi-gear-fill th-icon"></i>
+              Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of filteredUsers; let i = index" class="user-row" [class.even]="i % 2 === 0">
+            <td class="td-name">
+              <div class="user-avatar">{{ user.userFullName?.charAt(0) || 'U' }}</div>
+              <span class="user-name">{{ user.userFullName }}</span>
+            </td>
+            <td class="td-username">{{ user.userName }}</td>
+            <td class="td-phone">{{ user.userMobile }}</td>
+            <td class="td-role">
+              <span class="role-badge" [class]="'role-' + user.role?.roleName?.toLowerCase()">
+                {{ getRoleLabel(user.role?.roleName) }}
+              </span>
+            </td>
+            <td class="td-actions">
+              <div class="action-buttons">
+                <button (click)="onEdit(user.userId)" class="btn btn-edit" title="Edit User">
+                  <i class="bi bi-pencil-square btn-icon"></i>
+
+                </button>
+                <button (click)="onDelete(user.userId)" class="btn btn-delete" title="Delete User">
+                  <i class="bi bi-trash-fill btn-icon"></i>
+
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- No Users Message -->
+  <div *ngIf="users.length === 0 && !editingUser" class="empty-state">
+    <i class="bi bi-person-x-fill empty-icon"></i>
+    <h3>No Users Found</h3>
+    <p>There are no users in the system yet.</p>
+  </div>
+
+  <!-- Edit Form -->
+  <div *ngIf="editUserId !== null" class="edit-form-container">
+    <div class="edit-form-card">
+      <form (ngSubmit)="saveEdit()" class="edit-form">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="fullName" class="form-label">
+              <i class="bi bi-person-fill label-icon"></i>
+              Full Name
+            </label>
+            <input id="fullName" type="text" [(ngModel)]="editingUser.userFullName" name="fullName" required class="form-input" placeholder="Enter full name" />
+          </div>
+
+          <div class="form-group">
+            <label for="userName" class="form-label">
+              <i class="bi bi-person-badge-fill label-icon"></i>
+              Username
+            </label>
+            <input id="userName" type="text" [(ngModel)]="editingUser.userName" name="userName" required class="form-input" placeholder="Enter username" />
+          </div>
+
+          <div class="form-group">
+            <label for="userEmail" class="form-label">
+              <i class="bi bi-envelope-fill label-icon"></i>
+              Email
+            </label>
+            <input id="userEmail" type="email" [(ngModel)]="editingUser.userEmail" name="userEmail" required class="form-input" placeholder="Enter email address" />
+          </div>
+
+          <div class="form-group">
+            <label for="userMobile" class="form-label">
+              <i class="bi bi-phone-fill label-icon"></i>
+              Mobile
+            </label>
+            <input id="userMobile" type="text" [(ngModel)]="editingUser.userMobile" name="userMobile" required class="form-input" placeholder="Enter mobile number" />
+          </div>
+
+          <div class="form-group form-group-full">
+            <label for="roleId" class="form-label">
+              <i class="bi bi-briefcase-fill label-icon"></i>
+              Role
+            </label>
+            <select id="roleId" [ngModel]="editingUser.role.roleId" (ngModelChange)="onRoleChange($event)" name="roleId" required class="form-select">
+              <option value="" disabled>Select a role</option>
+              <option [value]="1">Admin</option>
+              <option [value]="2">Procurement Officer</option>
+              <option [value]="3">Inventory Manager</option>
+              <option [value]="4">Production Manager</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-save btn-icon"></i>
+            Save Changes
+          </button>
+          <button type="button" (click)="cancelEdit()" class="btn btn-secondary">
+            <i class="bi bi-x-circle btn-icon"></i>
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div *ngIf="showDeleteConfirm" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <i class="bi bi-exclamation-triangle-fill modal-icon"></i>
+        <h3>Confirm Delete</h3>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete this user? This action cannot be undone.</p>
+      </div>
+      <div class="modal-actions">
+        <button (click)="confirmDelete()" class="btn btn-danger">
+          <i class="bi bi-trash-fill btn-icon"></i>
+          Yes, Delete
+        </button>
+        <button (click)="cancelDelete()" class="btn btn-secondary">
+          <i class="bi bi-x-circle btn-icon"></i>
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Save Confirmation Modal -->
+  <div *ngIf="showConfirmation" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <i class="bi bi-save modal-icon"></i>
+        <h3>Confirm Changes</h3>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to save these changes?</p>
+      </div>
+      <div class="modal-actions">
+        <button (click)="confirmSave()" class="btn btn-primary">
+          <i class="bi bi-check-circle btn-icon"></i>
+          Yes, Save
+        </button>
+        <button (click)="cancelSave()" class="btn btn-secondary">
+          <i class="bi bi-x-circle btn-icon"></i>
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,66 @@
+<!-- pm-dashboard-layout.component.html -->
+<div class="dashboard-layout">
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="sidebar-header">
+      <h3><i class=""></i> OrderCraft</h3>
+    </div>
+    <ul class="nav-links">
+      <!-- <li>
+        <a routerLink="/po-dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <i class="bi bi-speedometer2"></i> Dashboard
+        </a>
+      </li> -->
+<!-- Few things added -->
+      <li>
+        <a routerLink="/pm-dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <i class="bi bi-card-checklist"></i> View Prodution Items
+        </a>
+      </li>
+
+      <li>
+        <a routerLink="/pm-dashboard/create-order" routerLinkActive="active">
+          <i class="bi bi-plus-circle"></i> Create Order
+        </a>
+      </li>
+      
+      <li>
+        <a routerLink="/pm-dashboard/order-tracking" routerLinkActive="active">
+          <i class="bi bi-truck"></i> Track Orders
+        </a>
+      </li>
+
+      <li (click)="logout()" class="logout-link"><a><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+
+    </ul>
+  </nav>
+
+  <!-- Main Content -->
+  <header class="header-bar">
+  <div class="top-right-icons">
+    <button class="icon-btn" (click)="goToDashboard()" title="Home">
+      <i class="bi bi-house-door"></i>
+    </button>
+    <!-- <button class="icon-btn" title="Settings">
+      <i class="bi bi-gear"></i>
+    </button> -->
+
+    <div class="profile-dropdown" tabindex="0" (click)="toggleDropdown()" (blur)="closeDropdown()">
+      <button class="icon-btn" title="Profile">
+        <i class="bi bi-person-circle"></i>
+      </button>
+      <div class="dropdown-menu" *ngIf="dropdownOpen">
+        <button (click)="openProfile('view')">View Profile</button>
+        <button (click)="openProfile('edit')">Edit Profile</button>
+      </div>
+    </div>
+
+    <button class="icon-btn" (click)="logout()" title="Logout">
+      <i class="bi bi-box-arrow-right"></i>
+    </button>
+  </div>
+</header>
+
+<main class="dashboard-main">
+  <router-outlet></router-outlet>
+</main>
