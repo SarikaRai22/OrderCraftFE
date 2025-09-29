@@ -27,6 +27,8 @@ export class ProductionReportsComponent {
   pageSize = 10;
   currentPage = 1;
 
+  //filters added
+
   constructor(private fb: FormBuilder, private inventoryService: InventoryService) {
     this.reportForm = this.fb.group({
       categoryId: [''],
