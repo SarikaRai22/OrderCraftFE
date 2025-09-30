@@ -1,0 +1,151 @@
+/* Using a modern font for better readability */
+:host {
+  font-family: 'Inter', sans-serif;
+  background-color: #f8f9fa;
+  display: block;
+  padding: 2rem;
+}
+
+.schedule-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem 2rem;
+}
+
+.container-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 1.5rem;
+}
+
+/* Flexbox layout for header and rows */
+.schedule-header,
+.schedule-row {
+  display: flex;
+  align-items: center;
+  padding: 1rem 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.schedule-header {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.schedule-row:last-child {
+  border-bottom: none;
+}
+
+/* Column width definitions */
+.col-id     { flex: 0 0 10%; }
+.col-product{ flex: 1 1 25%; }
+.col-progress{ flex: 1 1 15%; }
+.col-quantity{ flex: 1 1 15%; }
+.col-status { flex: 0 0 15%; }
+.col-date   { flex: 0 0 15%; }
+
+
+.schedule-id {
+  font-weight: 600;
+  color: #374151;
+}
+
+.product-name {
+  font-weight: 600;
+  color: #111827;
+}
+
+.product-id {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+/* Progress Bar Styles */
+.progress-bar-container {
+  width: 90%;
+  background-color: #e5e7eb;
+  border-radius: 9999px;
+  height: 24px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  background-color: #10b981; /* Green */
+  height: 100%;
+  border-radius: 9999px;
+  color: white;
+  font-weight: 600;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: width 0.5s ease-in-out;
+}
+
+.quantity-summary {
+  font-weight: 500;
+  color: #374151;
+}
+
+.quantity-remaining {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+/* Status Badge Styles */
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+
+.status-in-progress {
+  background-color: #fef3c7; /* Yellow */
+  color: #92400e;
+}
+
+.status-completed {
+  background-color: #d1fae5; /* Green */
+  color: #065f46;
+}
+
+.status-not-started {
+  background-color: #e5e7eb; /* Gray */
+  color: #4b5563;
+}
+
+.status-delayed {
+    background-color: #fee2e2; /* Red */
+    color: #991b1b;
+}
+
+.due-date {
+  font-weight: 500;
+  color: #374151;
+}
+
+.due-date-status.on-track {
+  color: #059669; /* Darker Green */
+  font-weight: 500;
+}
+
+.due-date-status.completed-early {
+  color: #059669; /* Darker Green */
+  font-weight: 500;
+}
+
+.loading-indicator {
+  padding: 2rem;
+  text-align: center;
+  color: #6b7280;
+  font-size: 1.125rem;
+}

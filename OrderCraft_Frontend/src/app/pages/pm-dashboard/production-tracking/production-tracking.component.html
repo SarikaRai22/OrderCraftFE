@@ -1,1 +1,69 @@
-<p>production-tracking works!</p>
+<!-- Main container for the production schedules UI -->
+<div class="schedule-container">
+  <h1 class="container-title">Production Schedules</h1>
+
+  <!-- Header row that displays column titles -->
+  <div class="schedule-header">
+    <div class="col-id">SCHEDULE ID</div>
+    <div class="col-product">PRODUCT</div>
+    <div class="col-progress">PROGRESS</div>
+    <div class="col-quantity">QUANTITY</div>
+    <div class="col-status">STATUS</div>
+    <div class="col-date">DUE DATE</div>
+  </div>
+
+  <!-- 
+    Data rows will be rendered here.
+    We use the async pipe to subscribe to the schedules$ observable.
+    A loading indicator is shown while waiting for data.
+  -->
+  <div *ngIf="schedules$ | async as schedules; else loading">
+    <!-- Loop through each schedule and create a row for it -->
+    <div *ngFor="let schedule of schedules" class="schedule-row">
+      <!-- Schedule ID Column -->
+      <div class="col-id">
+        <span class="schedule-id">{{ schedule.scheduleId }}</span>
+      </div>
+
+      <!-- Product Column -->
+      <div class="col-product">
+        <div class="product-name">{{ schedule.productName }}</div>
+        <div class="product-id">Product ID: {{ schedule.productId }}</div>
+      </div>
+
+      <!-- Progress Column -->
+      <div class="col-progress">
+        <div class="progress-bar-container">
+          <div class="progress-bar" [style.width.%]="schedule.progress">
+            {{ schedule.progress }}%
+          </div>
+        </div>
+      </div>
+
+      <!-- Quantity Column -->
+      <div class="col-quantity">
+        <div class="quantity-summary">{{ schedule.quantitySummary }}</div>
+        <div class="quantity-remaining">{{ schedule.quantityRemaining }}</div>
+      </div>
+
+      <!-- Status Column -->
+      <div class="col-status">
+        <span class="status-badge" [ngClass]="getStatusClass(schedule.status)">
+          {{ schedule.status }}
+        </span>
+      </div>
+
+      <!-- Due Date Column -->
+      <div class="col-date">
+        <div class="due-date">{{ schedule.dueDate }}</div>
+        <div class="due-date-status" [class.on-track]="schedule.dueDateStatus === 'On Track'" [class.completed-early]="schedule.dueDateStatus.includes('Early')">{{ schedule.dueDateStatus }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading template -->
+  <ng-template #loading>
+    <div class="loading-indicator">Loading Production Schedules...</div>
+  </ng-template>
+
+</div>
