@@ -26,6 +26,11 @@ export class ViewProductionTimelineComponent implements OnInit {
   loading = false;
   error: string | null = null;
 
+  // Pagination properties
+  currentPage = 1;
+  pageSize = 10; // show 10 rows per page
+  paginatedTimelines: any[] = [];
+
   constructor(
     private fb: FormBuilder,
     private timelineService: ProductionTimelineService,
@@ -43,9 +48,8 @@ export class ViewProductionTimelineComponent implements OnInit {
     this.loadAllTimelines();
     this.loadProducts();
 
-    // Subscribe to form changes
     this.filterForm.valueChanges
-      .pipe(debounceTime(300)) // small delay to avoid too many API calls
+      .pipe(debounceTime(300))
       .subscribe(() => {
         this.applyFilters();
       });
@@ -58,6 +62,7 @@ export class ViewProductionTimelineComponent implements OnInit {
         this.allTimelines = data;
         this.timelines = data;
         this.statuses = [...new Set(data.map(t => t.status))];
+        this.updatePaginatedTimelines();
         this.loading = false;
       },
       error: () => {
@@ -84,9 +89,9 @@ export class ViewProductionTimelineComponent implements OnInit {
       endDate: endDate || undefined
     };
 
-    // If no filters, show all
     if (!filter.productId && !filter.status && !filter.startDate && !filter.endDate) {
       this.timelines = this.allTimelines;
+      this.updatePaginatedTimelines();
       return;
     }
 
@@ -94,6 +99,7 @@ export class ViewProductionTimelineComponent implements OnInit {
     this.timelineService.getTimeline(filter).subscribe({
       next: (data) => {
         this.timelines = data;
+        this.updatePaginatedTimelines();
         this.loading = false;
       },
       error: () => {
@@ -106,5 +112,24 @@ export class ViewProductionTimelineComponent implements OnInit {
   resetFilters(): void {
     this.filterForm.reset();
     this.timelines = this.allTimelines;
+    this.updatePaginatedTimelines();
+  }
+
+  // Pagination methods
+  updatePaginatedTimelines(): void {
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    this.paginatedTimelines = this.timelines.slice(startIndex, endIndex);
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.updatePaginatedTimelines();
+    }
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.timelines.length / this.pageSize);
   }
 }
