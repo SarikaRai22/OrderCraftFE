@@ -108,7 +108,7 @@ export class ViewProductionTimelineComponent implements OnInit {
       }
     });
   }
-
+  //filter loading
   resetFilters(): void {
     this.filterForm.reset();
     this.timelines = this.allTimelines;
