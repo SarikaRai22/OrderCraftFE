@@ -26,7 +26,7 @@ export class ViewProductionTimelineComponent implements OnInit {
   loading = false;
   error: string | null = null;
 
-  // Pagination properties
+  // Pagination 
   currentPage = 1;
   pageSize = 10; // show 10 rows per page
   paginatedTimelines: any[] = [];
