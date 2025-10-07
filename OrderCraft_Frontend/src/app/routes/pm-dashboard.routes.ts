@@ -21,6 +21,13 @@ export const pmDashboardRoutes: Routes = [
           ),
       },
       {
+        path: 'pm-reports',
+        loadComponent: () =>
+          import('../pages/pm-dashboard/pm-reports/pm-reports.component').then(
+            m => m.ProductionReportsComponent
+          ),
+      },
+      {
         path: 'edit-profile',
         loadComponent: () =>
           import('../pages/edit-user-profile/edit-user-profile.component').then(

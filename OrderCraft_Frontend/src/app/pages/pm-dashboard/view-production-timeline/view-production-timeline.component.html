@@ -2,31 +2,31 @@
   <h2>View Production Timeline</h2>
 
   <form [formGroup]="filterForm" class="filter-form">
-  <label>Product:</label>
-  <select formControlName="productId">
-    <option value="">All</option>
-    <option *ngFor="let p of products" [value]="p.productsId">{{ p.productsName }}</option>
-  </select>
+    <label>Product:</label>
+    <select formControlName="productId">
+      <option value="">All</option>
+      <option *ngFor="let p of products" [value]="p.productsId">{{ p.productsName }}</option>
+    </select>
 
-  <label>Status:</label>
-  <select formControlName="status">
-    <option value="">All</option>
-    <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
-  </select>
+    <label>Status:</label>
+    <select formControlName="status">
+      <option value="">All</option>
+      <option *ngFor="let s of statuses" [value]="s">{{ s }}</option>
+    </select>
 
-  <label>Start Date:</label>
-  <input type="date" formControlName="startDate" />
+    <label>Start Date:</label>
+    <input type="date" formControlName="startDate" />
 
-  <label>End Date:</label>
-  <input type="date" formControlName="endDate" />
+    <label>End Date:</label>
+    <input type="date" formControlName="endDate" />
 
-  <button type="button" (click)="resetFilters()">Reset</button>
-</form>
+    <button type="button" (click)="resetFilters()">Reset</button>
+  </form>
 
   <p *ngIf="error" class="error">{{ error }}</p>
   <p *ngIf="loading">Loading...</p>
 
-  <table *ngIf="timelines.length > 0">
+  <table *ngIf="paginatedTimelines.length > 0">
     <thead>
       <tr>
         <th>ID</th>
@@ -38,7 +38,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let t of timelines">
+      <tr *ngFor="let t of paginatedTimelines">
         <td>{{ t.scheduleId }}</td>
         <td>{{ t.productName }}</td>
         <td>{{ t.startDate | date }}</td>
@@ -50,4 +50,18 @@
   </table>
 
   <p *ngIf="!loading && timelines.length === 0">No records found.</p>
+
+  <!-- Pagination Controls -->
+  <div class="pagination-controls" *ngIf="totalPages > 1">
+    <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">Previous</button>
+
+    <!-- Page Numbers -->
+    <button *ngFor="let page of [].constructor(totalPages); let i = index"
+            (click)="goToPage(i + 1)"
+            [class.active]="currentPage === (i + 1)">
+      {{ i + 1 }}
+    </button>
+
+    <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">Next</button>
+  </div>
 </div>
