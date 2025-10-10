@@ -17,47 +17,46 @@ export class ProductionTaskComponent {
   quantity!: number;
   unitIdToComplete!: number;
 
+  startDate!: string; // yyyy-MM-dd
+  endDate!: string;   // yyyy-MM-dd
+
   assignedUnit?: ProductionUnit;
   message: string = '';
+
+  categoryName: string = '';
+  productName: string = '';
 
   constructor(
     private taskService: ProductionTimelineService,
     private router: Router
   ) {
-    // Capture state passed from view-requests component
-   const state = this.router.getCurrentNavigation()?.extras.state;
-if (state) {
-  this.categoryId = state['categoryId'] || 0;
-  this.productId = state['productId'] || 0;
-  this.quantity = state['quantity'] || 0;
+    const state = this.router.getCurrentNavigation()?.extras.state;
+    if (state) {
+      this.categoryId = state['categoryId'] || 0;
+      this.productId = state['productId'] || 0;
+      this.quantity = state['quantity'] || 0;
 
-  // Capture names too
-  this.categoryName = state['categoryName'] || '';
-  this.productName = state['productName'] || '';
-}
-
+      this.categoryName = state['categoryName'] || '';
+      this.productName = state['productName'] || '';
+    }
   }
 
-
-  categoryName: string = '';
-productName: string = '';
-
-
   assignTask() {
-    if (!this.categoryId || !this.productId || !this.quantity) {
-      this.message = 'Please fill all fields.';
+    if (!this.categoryId || !this.productId || !this.quantity || !this.startDate || !this.endDate) {
+      this.message = 'Please fill all fields including start and end dates.';
       return;
     }
 
-    this.taskService.assignTask(this.categoryId, this.productId, this.quantity).subscribe({
-      next: (unit) => {
-        this.assignedUnit = unit;
-        this.message = `✅ Task assigned to unit: ${unit.unitName}`;
-      },
-      error: () => {
-        this.message = '❌ No available production unit found for this task.';
-      }
-    });
+    this.taskService.assignTask(this.categoryId, this.productId, this.quantity, this.startDate, this.endDate)
+      .subscribe({
+        next: (unit) => {
+          this.assignedUnit = unit;
+          this.message = `✅ Task assigned to unit: ${unit.unitName}`;
+        },
+        error: () => {
+          this.message = '❌ No available production unit found for this task.';
+        }
+      });
   }
 
   completeTask() {

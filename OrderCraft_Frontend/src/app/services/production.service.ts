@@ -50,21 +50,29 @@ export class ProductionTimelineService {
 
   // 🏭 2. Assign Task to Production Unit
   // 🏭 2. Assign Task to Production Unit
-assignTask(categoryId: number, productId: number, quantity: number): Observable<ProductionUnit> {
-  
-    const params = new HttpParams()
-  .set('categoryId', categoryId.toString())
-  .set('productId', productId.toString())
-  .set('quantity', quantity.toString());
+// 🏭 Assign Task to Production Unit with start and end dates
+assignTask(
+  categoryId: number,
+  productId: number,
+  quantity: number,
+  startDate: string,  // yyyy-MM-dd
+  endDate: string     // yyyy-MM-dd
+): Observable<ProductionUnit> {
 
+  const params = new HttpParams()
+    .set('categoryId', categoryId.toString())
+    .set('productId', productId.toString())
+    .set('quantity', quantity.toString())
+    .set('startDate', startDate)
+    .set('endDate', endDate);
 
-  // ✅ Updated POST with withCredentials
   return this.http.post<ProductionUnit>(`${this.unitBaseUrl}/assign`, {}, {
     headers: this.getHeaders(),
     params,
     withCredentials: true
   });
 }
+
 
 
   // ✅ 3. Complete Task for a Unit
