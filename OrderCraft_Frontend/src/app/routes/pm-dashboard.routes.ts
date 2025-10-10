@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { PmDashboardLayoutComponent } from '../pages/pm-dashboard/pm-dashboard-layout/pm-dashboard-layout.component';
+import { ProductionTrackingComponent } from '../pages/pm-dashboard/production-tracking/production-tracking.component';
 
 export const pmDashboardRoutes: Routes = [
   {
@@ -27,6 +28,11 @@ export const pmDashboardRoutes: Routes = [
             m => m.ProductionReportsComponent
           ),
       },
+      // { path: 'production-tracking/:id', component: ProductionTrackingComponent },
+      {path: 'production-tracking',component: ProductionTrackingComponent},
+      {path: 'production-tracking/:id',component: ProductionTrackingComponent},
+
+      
       {
         path: 'edit-profile',
         loadComponent: () =>
