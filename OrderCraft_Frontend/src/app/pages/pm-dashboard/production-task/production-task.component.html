@@ -1,0 +1,54 @@
+<div class="task-container">
+  <h2>🧩 Production Task Management</h2>
+
+  <!-- ASSIGN TASK SECTION -->
+  <div class="card">
+    <h3>Assign Task to Production Unit</h3>
+
+    <form (ngSubmit)="assignTask()" class="form-grid">
+      <div class="form-group">
+  <label>Category</label>
+  <input type="text" [(ngModel)]="categoryName" name="categoryName" readonly />
+</div>
+
+<div class="form-group">
+  <label>Product</label>
+  <input type="text" [(ngModel)]="productName" name="productName" readonly />
+</div>
+
+<div class="form-group">
+  <label>Quantity</label>
+  <input type="number" [(ngModel)]="quantity" name="quantity" required />
+</div>
+
+
+      <button type="submit" class="btn-assign">Assign Task</button>
+    </form>
+
+    <div *ngIf="assignedUnit" class="result-card">
+      <h4>✅ Task Assigned Successfully!</h4>
+      <p><strong>Unit Name:</strong> {{ assignedUnit.unitName }}</p>
+      <p><strong>Unit ID:</strong> {{ assignedUnit.unitId }}</p>
+      <p><strong>Capacity:</strong> {{ assignedUnit.capacity }}</p>
+      <p><strong>Current Load:</strong> {{ assignedUnit.currentLoad }}</p>
+      <p><strong>Status:</strong> {{ assignedUnit.availabilityStatus }}</p>
+    </div>
+  </div>
+
+  <!-- COMPLETE TASK SECTION -->
+  <div class="card">
+    <h3>Mark Task as Completed</h3>
+    <form (ngSubmit)="completeTask()" class="form-grid">
+      <div class="form-group">
+        <label>Production Unit ID</label>
+        <input type="number" [(ngModel)]="unitIdToComplete" name="unitIdToComplete" required />
+      </div>
+      <button type="submit" class="btn-complete">Complete Task</button>
+    </form>
+  </div>
+
+  <!-- STATUS MESSAGE -->
+  <div *ngIf="message" class="message-box">
+    {{ message }}
+  </div>
+</div>
