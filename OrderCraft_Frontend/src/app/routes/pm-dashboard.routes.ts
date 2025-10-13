@@ -39,6 +39,13 @@ export const pmDashboardRoutes: Routes = [
         loadComponent: () =>
           import('../pages/pm-dashboard/view-requests/view-requests.component').then(
             m => m.ViewRequestsComponent
+             ),
+      },
+      {
+        path: 'scheduling',
+        loadComponent: () =>
+          import('../pages/pm-dashboard/production-scheduling/production-scheduling.component').then(
+            m => m.ProductionSchedulingComponent
           ),
       },
       {
