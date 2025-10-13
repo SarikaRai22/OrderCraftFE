@@ -28,6 +28,13 @@ export const pmDashboardRoutes: Routes = [
           ),
       },
       {
+        path: 'scheduling',
+        loadComponent: () =>
+          import('../pages/pm-dashboard/production-scheduling/production-scheduling.component').then(
+            m => m.ProductionSchedulingComponent
+          ),
+      },
+      {
         path: 'edit-profile',
         loadComponent: () =>
           import('../pages/edit-user-profile/edit-user-profile.component').then(
