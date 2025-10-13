@@ -98,7 +98,7 @@ export interface ScheduledReportDTO {
 export class InventoryService {
   private baseUrl = 'http://localhost:8085/api/inventory';
   private reportsUrl = 'http://localhost:8085/api/reports';
-  private productionUrl = 'http://localhost:8085/api/production';
+  private productionUrl = 'http://localhost:8085/api/production_schedule';
 
   constructor(private http: HttpClient) {}
 

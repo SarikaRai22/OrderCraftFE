@@ -17,6 +17,8 @@ export class ImReportsComponent {
   loading = false;
   errorMsg = '';
 
+  //filters
+
   constructor(private fb: FormBuilder, private inventoryService: InventoryService) {
     this.reportForm = this.fb.group({
       reportType: ['', Validators.required],

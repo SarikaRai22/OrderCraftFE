@@ -1,0 +1,52 @@
+<div class="requests-container">
+  <h2>Production Requests</h2>
+
+  <div *ngIf="loading" class="loading">Loading production requests...</div>
+  <div *ngIf="errorMessage" class="error">{{ errorMessage }}</div>
+
+  <table *ngIf="!loading && !errorMessage && productionRequests.length > 0" class="requests-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Product Name</th>
+        <th>Quantity</th>
+        <th>Status</th>
+        <th>Action</th> <!-- 🆕 New Column -->
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let req of productionRequests; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ req.productName || 'N/A' }}</td>
+        <td>{{ req.quantity }}</td>
+        <td>
+          <span [ngClass]="{
+              'status-pending': req.status === 'PENDING',
+              'status-inprogress': req.status === 'IN_PROGRESS',
+              'status-completed': req.status === 'COMPLETED',
+              'status-requested': req.status === 'REQUESTED'
+            }">
+            {{ req.status }}
+          </span>
+        </td>
+
+        <!-- 🧩 Action Button Column -->
+        <td>
+          <button
+            *ngIf="req.status === 'REQUESTED'"
+            class="btn-schedule"
+            (click)="sendForScheduling(req)"
+          >
+            <i class="bi bi-send"></i> Schedule Production
+          </button>
+
+          <span *ngIf="req.status !== 'REQUESTED'" class="no-action">—</span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="!loading && !errorMessage && productionRequests.length === 0" class="no-data">
+    No production requests found.
+  </div>
+</div>
