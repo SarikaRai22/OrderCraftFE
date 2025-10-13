@@ -147,17 +147,43 @@
                     <i class="bi bi-calendar-check"></i> Schedule
                   </button> -->
                 <!-- Updated: Request Production Button -->
-                <button
-                  class="btn btn-sm btn-outline-primary"
-                  (click)="scheduleProduction(order.orderId, item)"
-                  [disabled]="getStockStatus(item.currentStock, item.quantity) === 'sufficient-stock' 
-                              || isProductScheduled.get(item.productId)">
-                  <i class="bi bi-cart-check"></i>
-                  {{ isProductScheduled.get(item.productId) ? 'Order Scheduled' : 'Request' }}
-                </button>
+          <button
+              class="btn btn-sm btn-outline-primary"
+              (click)="scheduleProduction(order.orderId, item)"
+              [disabled]="getStockStatus(item.currentStock, item.quantity) === 'sufficient-stock' 
+                          || item.orderStatus === 'APPROVED' 
+                          || isProductScheduled.get(item.productId)">
+              <i class="bi bi-cart-check"></i>
+              {{ isProductScheduled.get(item.productId) ? 'Order Scheduled' : 'Request' }}
+            </button>
 
 
-                </td>
+
+              <td class="action-cell">
+              <!-- Case 1: Sufficient stock & order not approved -->
+              <button class="btn btn-sm btn-success"
+                      *ngIf="item.currentStock >= item.quantity && item.orderStatus === 'REQUESTED'"
+                      (click)="approveOrder(order.orderId)">
+                <i class="bi bi-check2-circle"></i> Approve
+              </button>
+
+              <!-- Case 2: Insufficient stock & order not approved -->
+              <button class="btn btn-sm btn-outline-primary"
+                      *ngIf="item.currentStock < item.quantity && item.orderStatus === 'REQUESTED'"
+                      (click)="scheduleProduction(order.orderId, item)"
+                      [disabled]="isProductScheduled.get(item.productId)">
+                <i class="bi bi-cart-check"></i>
+                {{ isProductScheduled.get(item.productId) ? 'Order Scheduled' : 'Request' }}
+              </button>
+
+              <!-- Case 3: Already approved -->
+              <span *ngIf="item.orderStatus === 'APPROVED'" class="text-success">
+                <i class="bi bi-check-circle me-1"></i> Approved
+              </span>
+            </td>
+
+
+
               </tr>
             </ng-container>
           </tbody>

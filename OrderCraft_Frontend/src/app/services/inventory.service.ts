@@ -53,6 +53,7 @@ export interface NewPOOrder {
   productName: string;
   quantity: number;
   currentStock: number;
+  orderStatus: string;
 }
 
 // --- Report DTOs ---
@@ -237,4 +238,15 @@ scheduleProduction(payload: any) {
     headers: this.getAuthHeaders()
   });
 }
+
+
+/** Approve a purchase order */
+approvePurchaseOrder(orderId: number): Observable<any> {
+  return this.http.post(
+    `${this.baseUrl}/orders/${orderId}/approve`,
+    {}, // empty body
+    { headers: this.getAuthHeaders() }
+  );
+}
+
 }
