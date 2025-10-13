@@ -34,6 +34,20 @@ export const pmDashboardRoutes: Routes = [
 
       
       {
+        path: 'production-task',
+        loadComponent: () =>
+          import('../pages/pm-dashboard/production-task/production-task.component').then(
+            m => m.ProductionTaskComponent
+          ),
+      },
+      {
+        path: 'view-requests',
+        loadComponent: () =>
+          import('../pages/pm-dashboard/view-requests/view-requests.component').then(
+            m => m.ViewRequestsComponent
+          ),
+      },
+      {
         path: 'edit-profile',
         loadComponent: () =>
           import('../pages/edit-user-profile/edit-user-profile.component').then(
