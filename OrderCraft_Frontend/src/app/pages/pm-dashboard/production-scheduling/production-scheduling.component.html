@@ -1,0 +1,74 @@
+<div class="container">
+  <h2>🛠️ Create Production Schedule</h2>
+
+  <form [formGroup]="scheduleForm" (ngSubmit)="onSubmit()" class="form-container">
+    <div class="form-group">
+      <label>Product</label>
+      <select formControlName="productId">
+        <option value="">-- Select Product --</option>
+        <option *ngFor="let p of products" [value]="p.productsId">
+          {{ p.productsName }}
+        </option>
+      </select>
+      <small *ngIf="scheduleForm.get('productId')?.invalid && scheduleForm.get('productId')?.touched" class="error">
+        Product is required.
+      </small>
+    </div>
+
+    <div class="form-group">
+      <label>Quantity</label>
+      <input type="number" formControlName="quantity" placeholder="Enter quantity" />
+      <small *ngIf="scheduleForm.get('quantity')?.invalid && scheduleForm.get('quantity')?.touched" class="error">
+        Valid quantity is required.
+      </small>
+    </div>
+
+    <div class="form-group">
+      <label>Start Date</label>
+      <input type="date" formControlName="startDate" />
+      <small *ngIf="scheduleForm.get('startDate')?.invalid && scheduleForm.get('startDate')?.touched" class="error">
+        Start date is required.
+      </small>
+    </div>
+
+    <div class="form-group">
+      <label>End Date</label>
+      <input type="date" formControlName="endDate" />
+      <small *ngIf="scheduleForm.get('endDate')?.invalid && scheduleForm.get('endDate')?.touched" class="error">
+        End date is required.
+      </small>
+    </div>
+
+    <button type="submit" [disabled]="scheduleForm.invalid">Create Schedule</button>
+  </form>
+
+  <p class="message" *ngIf="message">{{ message }}</p>
+
+  <h3>📋 Existing Schedules</h3>
+  <table class="schedule-table" *ngIf="schedules.length > 0; else noData">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Product</th>
+        <th>Quantity</th>
+        <th>Status</th>
+        <th>Start</th>
+        <th>End</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let s of schedules">
+        <td>{{ s.scheduleId }}</td>
+        <td>{{ s.productName }}</td>
+        <td>{{ s.quantity }}</td>
+        <td>{{ s.status }}</td>
+        <td>{{ s.startDate | date }}</td>
+        <td>{{ s.endDate | date }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <ng-template #noData>
+    <p>No production schedules found.</p>
+  </ng-template>
+</div>

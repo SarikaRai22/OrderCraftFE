@@ -25,6 +25,7 @@ interface OrderItem {
   productName: string;
   quantity: number;
   stock: number;
+  orderStatus: string;
 }
 
 interface ProcessedOrder {
@@ -35,6 +36,7 @@ interface ProcessedOrder {
     productName: string;
     quantity: number;
     currentStock: number;
+    orderStatus: string;
   }[];
 }
 
@@ -120,8 +122,10 @@ export class ViewImOrdersComponent implements OnInit {
             productId: o.productId,
             productName: o.productName,
             quantity: o.quantity,
-            stock: o.currentStock
+            stock: o.currentStock,
+            orderStatus: o.orderStatus || 'Pending'
           }));
+console.log('API Orders:', apiOrders);
 
           const groupedOrders = new Map<number, ProcessedOrder>();
           orderItems.forEach(item => {
@@ -138,7 +142,8 @@ export class ViewImOrdersComponent implements OnInit {
               productId: item.productId,
               productName: item.productName,
               quantity: item.quantity,
-              currentStock: item.stock
+              currentStock: item.stock,
+              orderStatus: item.orderStatus
             });
 
             // ✅ Check if product already has active schedule
@@ -152,6 +157,8 @@ export class ViewImOrdersComponent implements OnInit {
         error: (err) => reject(err)
       });
     });
+
+    
   }
 
   // private checkActiveSchedules(productId: number): void {
@@ -266,4 +273,24 @@ export class ViewImOrdersComponent implements OnInit {
       }
     });
   }
+
+  approveOrder(orderId: number) {
+  if (!confirm(`Are you sure you want to approve order #${orderId}?`)) return;
+
+  this.inventoryService.approvePurchaseOrder(orderId).subscribe({
+    next: () => {
+      alert(`✅ Order #${orderId} approved successfully!`);
+      this.refreshData(); // refresh orders and stock
+    },
+    error: (err) => {
+      console.error('Failed to approve order:', err);
+      alert('❌ Failed to approve order.');
+    }
+  });
+}
+
+
+
+
+  
 }

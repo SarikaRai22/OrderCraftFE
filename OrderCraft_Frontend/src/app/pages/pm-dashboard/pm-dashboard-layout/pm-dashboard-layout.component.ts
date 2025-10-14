@@ -44,6 +44,8 @@ export class PmDashboardLayoutComponent {
     this.router.navigate(['/login']);
   }
 
+  //added logout function
+
   goToDashboard(): void {
     this.router.navigate(['/pm-dashboard']);
   }

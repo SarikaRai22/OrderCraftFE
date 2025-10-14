@@ -146,16 +146,44 @@
                     [disabled]="getStockStatus(item.currentStock, item.quantity) === 'sufficient-stock'">
                     <i class="bi bi-calendar-check"></i> Schedule
                   </button> -->
-                  <button
-                  class="btn btn-sm btn-outline-primary"
-                  (click)="scheduleProduction(order.orderId, item)"
-                  [disabled]="getStockStatus(item.currentStock, item.quantity) === 'sufficient-stock' 
-                              || isProductScheduled.get(item.productId)">
-                  <i class="bi bi-calendar-check"></i>
-                  {{ isProductScheduled.get(item.productId) ? 'Order Scheduled' : 'Schedule' }}
-                </button>
+                <!-- Updated: Request Production Button -->
+          <button
+              class="btn btn-sm btn-outline-primary"
+              (click)="scheduleProduction(order.orderId, item)"
+              [disabled]="getStockStatus(item.currentStock, item.quantity) === 'sufficient-stock' 
+                          || item.orderStatus === 'APPROVED' 
+                          || isProductScheduled.get(item.productId)">
+              <i class="bi bi-cart-check"></i>
+              {{ isProductScheduled.get(item.productId) ? 'Order Scheduled' : 'Request' }}
+            </button>
 
-                </td>
+
+
+              <td class="action-cell">
+              <!-- Case 1: Sufficient stock & order not approved -->
+              <button class="btn btn-sm btn-success"
+                      *ngIf="item.currentStock >= item.quantity && item.orderStatus === 'REQUESTED'"
+                      (click)="approveOrder(order.orderId)">
+                <i class="bi bi-check2-circle"></i> Approve
+              </button>
+
+              <!-- Case 2: Insufficient stock & order not approved -->
+              <button class="btn btn-sm btn-outline-primary"
+                      *ngIf="item.currentStock < item.quantity && item.orderStatus === 'REQUESTED'"
+                      (click)="scheduleProduction(order.orderId, item)"
+                      [disabled]="isProductScheduled.get(item.productId)">
+                <i class="bi bi-cart-check"></i>
+                {{ isProductScheduled.get(item.productId) ? 'Order Scheduled' : 'Request' }}
+              </button>
+
+              <!-- Case 3: Already approved -->
+              <span *ngIf="item.orderStatus === 'APPROVED'" class="text-success">
+                <i class="bi bi-check-circle me-1"></i> Approved
+              </span>
+            </td>
+
+
+
               </tr>
             </ng-container>
           </tbody>
@@ -177,32 +205,21 @@
   </div>
 </div>
 
-<!-- ✅ Production Scheduling Modal -->
+<!-- ✅ Production Request Modal -->
 <div class="modal" *ngIf="showScheduleModal">
   <div class="modal-content">
-    <h3><i class="bi bi-calendar-check"></i> Schedule Production</h3>
+    <h3><i class="bi bi-cart-check"></i> Request Production</h3>
     <p><strong>Order #{{ selectedOrderId }}</strong></p>
     <p>Product: {{ selectedProduct?.productName }}</p>
     
     <label>Required Quantity:</label>
-    <input type="number" [(ngModel)]="scheduleData.quantity" class="form-control">
-  <div class="date-row">
-    <div class="form-group">
-      <label>Start Date:</label>
-      <input type="date" [(ngModel)]="scheduleData.startDate" class="form-control">
-    </div>
-    <div class="form-group">
-      <label>End Date:</label>
-      <input type="date" [(ngModel)]="scheduleData.endDate" class="form-control">
-    </div>
-     <div class="form-group">
-    <label>Remarks:</label>
-    <textarea [(ngModel)]="scheduleData.remarks" class="form-control"></textarea></div>
-  </div>
-    <div class="modal-actions">
-      <button class="btn btn-primary" (click)="confirmSchedule()">Confirm</button>
+    <input type="number" [(ngModel)]="scheduleData.quantity" class="form-control" min="1">
+
+    <div class="modal-actions mt-3">
+      <button class="btn btn-primary" (click)="confirmSchedule()">Request</button>
       <button class="btn btn-secondary" (click)="closeModal()">Cancel</button>
     </div>
   </div>
 </div>
+
 

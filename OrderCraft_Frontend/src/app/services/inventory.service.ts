@@ -53,6 +53,7 @@ export interface NewPOOrder {
   productName: string;
   quantity: number;
   currentStock: number;
+  orderStatus: string;
 }
 
 // --- Report DTOs ---
@@ -98,7 +99,7 @@ export interface ScheduledReportDTO {
 export class InventoryService {
   private baseUrl = 'http://localhost:8085/api/inventory';
   private reportsUrl = 'http://localhost:8085/api/reports';
-  private productionUrl = 'http://localhost:8085/api/production';
+  private productionUrl = 'http://localhost:8085/api/production_schedule';
 
   constructor(private http: HttpClient) {}
 
@@ -237,4 +238,15 @@ scheduleProduction(payload: any) {
     headers: this.getAuthHeaders()
   });
 }
+
+
+/** Approve a purchase order */
+approvePurchaseOrder(orderId: number): Observable<any> {
+  return this.http.post(
+    `${this.baseUrl}/orders/${orderId}/approve`,
+    {}, // empty body
+    { headers: this.getAuthHeaders() }
+  );
+}
+
 }
