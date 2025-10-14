@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { PmDashboardLayoutComponent } from '../pages/pm-dashboard/pm-dashboard-layout/pm-dashboard-layout.component';
+import { AssignTaskComponent } from '../pages/pm-dashboard/assign-task/assign-task.component';
 
 export const pmDashboardRoutes: Routes = [
   {
@@ -33,7 +34,16 @@ export const pmDashboardRoutes: Routes = [
           import('../pages/edit-user-profile/edit-user-profile.component').then(
             m => m.EditUserProfileComponent
           ),
-      }
+      },
+      {
+  path: 'assign-task',
+  loadComponent: () =>
+    import('../pages/pm-dashboard/assign-task/assign-task.component').then(
+      m => m.AssignTaskComponent
+    ),
+},
+
+
     ],
   },
 ];

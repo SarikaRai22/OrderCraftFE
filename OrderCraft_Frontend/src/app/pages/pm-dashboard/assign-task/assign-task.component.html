@@ -1,0 +1,79 @@
+<div class="assign-task-container">
+  <h2>Assign Tasks to Production Units</h2>
+
+  <p class="refresh-note">Auto-refresh every 30 seconds to keep data updated.</p>
+
+  <!-- Search bar -->
+  <div class="filter-bar">
+    <input
+      type="text"
+      placeholder="Search by unit name or category ID"
+      [(ngModel)]="searchTerm"
+      (input)="filterUnits()"
+    />
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading">
+    <i class="bi bi-arrow-repeat spin"></i> Loading production units...
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="errorMessage" class="error-msg">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Success -->
+  <div *ngIf="successMessage" class="success-msg">
+    {{ successMessage }}
+  </div>
+
+  <!-- Units Table -->
+  <table class="units-table" *ngIf="!loading && filteredUnits.length > 0">
+    <thead>
+      <tr>
+        <th>Unit Name</th>
+        <th>Category ID</th>
+        <th>Capacity</th>
+        <th>Current Load</th>
+        <th>Status</th>
+        <th>Assign Task</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let unit of filteredUnits">
+        <td>{{ unit.unitName }}</td>
+        <td>{{ unit.categoryId }}</td>
+        <td>{{ unit.capacity }}</td>
+        <td>{{ unit.currentLoad }}</td>
+        <td>
+          <span [ngClass]="unit.availabilityStatus === 'Available' ? 'available' : 'unavailable'">
+            {{ unit.availabilityStatus }}
+          </span>
+        </td>
+        <td>
+          <div class="assign-controls" *ngIf="unit.availabilityStatus === 'Available'; else notAvailable">
+            <input
+              type="number"
+              placeholder="Product ID"
+              [(ngModel)]="selectedProductId"
+            />
+            <input
+              type="number"
+              placeholder="Quantity"
+              [(ngModel)]="quantity"
+            />
+            <button (click)="assignTask(unit)">Assign</button>
+          </div>
+          <ng-template #notAvailable>
+            <span class="unavailable-text">Unavailable</span>
+          </ng-template>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="!loading && filteredUnits.length === 0" class="no-data">
+    No production units found.
+  </div>
+</div>
