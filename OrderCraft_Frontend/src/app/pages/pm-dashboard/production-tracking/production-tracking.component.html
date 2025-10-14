@@ -1,69 +1,58 @@
-<!-- Main container for the production schedules UI -->
-<div class="schedule-container">
-  <h1 class="container-title">Production Schedules</h1>
+<div class="tracking-container">
+  <h2>Track Production Schedule</h2>
 
-  <!-- Header row that displays column titles -->
-  <div class="schedule-header">
-    <div class="col-id">SCHEDULE ID</div>
-    <div class="col-product">PRODUCT</div>
-    <div class="col-progress">PROGRESS</div>
-    <div class="col-quantity">QUANTITY</div>
-    <div class="col-status">STATUS</div>
-    <div class="col-date">DUE DATE</div>
-  </div>
+  <!-- Loading and Error States -->
+  <div *ngIf="isLoading" class="alert alert-info">Loading data...</div>
+  <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
 
-  <!-- 
-    Data rows will be rendered here.
-    We use the async pipe to subscribe to the schedules$ observable.
-    A loading indicator is shown while waiting for data.
-  -->
-  <div *ngIf="schedules$ | async as schedules; else loading">
-    <!-- Loop through each schedule and create a row for it -->
-    <div *ngFor="let schedule of schedules" class="schedule-row">
-      <!-- Schedule ID Column -->
-      <div class="col-id">
-        <span class="schedule-id">{{ schedule.scheduleId }}</span>
-      </div>
+  <!-- Main Content -->
+  <div *ngIf="!isLoading">
+    <div class="form-group mb-3">
+      <label for="scheduleSelect" class="form-label">Select Schedule:</label>
+      <select id="scheduleSelect" [(ngModel)]="selectedScheduleId" (change)="fetchTrackingDetails()" class="form-select">
+        <option [ngValue]="null" disabled>Select a production schedule</option>
+        <option *ngFor="let s of schedules" [ngValue]="s.psId">
+          Schedule #{{ s.psId }} - {{ s.product?.productsName || 'N/A' }} (Status: {{ s.status }})
+        </option>
+      </select>
+    </div>
 
-      <!-- Product Column -->
-      <div class="col-product">
-        <div class="product-name">{{ schedule.productName }}</div>
-        <div class="product-id">Product ID: {{ schedule.productId }}</div>
-      </div>
+    <div class="text-end">
+      <button class="btn btn-primary" (click)="refreshSchedules()">
+        <i class="bi bi-arrow-repeat"></i> Refresh List
+      </button>
+    </div>
 
-      <!-- Progress Column -->
-      <div class="col-progress">
-        <div class="progress-bar-container">
-          <div class="progress-bar" [style.width.%]="schedule.progress">
-            {{ schedule.progress }}%
+    <!-- Timeline -->
+    <div *ngIf="trackingDetails" class="timeline-wrapper mt-5">
+      <div class="timeline d-flex justify-content-between position-relative">
+        <div class="step text-center" *ngFor="let stage of stages; let i = index">
+          <div class="circle-wrapper position-relative d-flex flex-column align-items-center">
+            <div class="circle d-flex align-items-center justify-content-center mb-2" [ngClass]="{ 'active': isStageActive(stage) }">
+              <i class="bi bi-check-lg"></i>
+            </div>
+            <div class="line position-absolute top-50 start-100 translate-middle-y" *ngIf="i < stages.length - 1" [ngClass]="{ 'active': isStageActive(stages[i + 1]) }"></div>
+          </div>
+          <div class="stage-icon my-1">
+            <i [ngClass]="stageIcons[i]" class="stage-symbol fs-4"></i>
+          </div>
+          <div class="stage-label mt-1 fw-semibold" [ngClass]="{ 'active': isStageActive(stage) }">
+            {{ stageLabels[i] }}
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- Quantity Column -->
-      <div class="col-quantity">
-        <div class="quantity-summary">{{ schedule.quantitySummary }}</div>
-        <div class="quantity-remaining">{{ schedule.quantityRemaining }}</div>
-      </div>
-
-      <!-- Status Column -->
-      <div class="col-status">
-        <span class="status-badge" [ngClass]="getStatusClass(schedule.status)">
-          {{ schedule.status }}
-        </span>
-      </div>
-
-      <!-- Due Date Column -->
-      <div class="col-date">
-        <div class="due-date">{{ schedule.dueDate }}</div>
-        <div class="due-date-status" [class.on-track]="schedule.dueDateStatus === 'On Track'" [class.completed-early]="schedule.dueDateStatus.includes('Early')">{{ schedule.dueDateStatus }}</div>
-      </div>
+    <!-- Details Box -->
+    <div class="order-info mt-4" *ngIf="trackingDetails">
+      <p><strong>Schedule ID:</strong> {{ trackingDetails.psid }}</p>
+      <p><strong>Product Name:</strong> {{ trackingDetails.productName }}</p>
+      <p><strong>Quantity:</strong> {{ trackingDetails.psquantity }}</p>
+      <hr>
+      <p><strong>Overall Status:</strong> {{ trackingDetails.psstatus }}</p>
+      <p><strong>Current Timeline Stage:</strong> {{ trackingDetails.currentStage }}</p>
+      <p><strong>Start Date:</strong> {{ trackingDetails.psstartdate | date: 'mediumDate' }}</p>
+      <p><strong>Target End Date:</strong> {{ trackingDetails.psenddate | date: 'mediumDate' }}</p>
     </div>
   </div>
-
-  <!-- Loading template -->
-  <ng-template #loading>
-    <div class="loading-indicator">Loading Production Schedules...</div>
-  </ng-template>
-
 </div>
