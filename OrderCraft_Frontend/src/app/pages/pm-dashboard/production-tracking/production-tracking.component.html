@@ -1,52 +1,58 @@
 <div class="tracking-container">
-  <h2>Track Production</h2>
+  <h2>Track Production Schedule</h2>
 
-  <div class="form-group">
-    <label for="scheduleSelect">Select Schedule:</label>
-    <select id="scheduleSelect" [(ngModel)]="selectedScheduleId" (change)="onScheduleSelect()">
-      <option value="" disabled selected>Select a schedule</option>
-      <option *ngFor="let s of schedules" [value]="s.scheduleId">
-        #{{ s.scheduleId }} - {{ s.productName }}
-      </option>
-    </select>
-  </div>
+  <!-- Loading and Error States -->
+  <div *ngIf="isLoading" class="alert alert-info">Loading data...</div>
+  <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
 
-  <div class="text-end mt-3">
-    <button class="btn btn-primary" (click)="refreshSchedules()">
-      <i class="bi bi-arrow-repeat"></i> Refresh
-    </button>
-  </div>
+  <!-- Main Content -->
+  <div *ngIf="!isLoading">
+    <div class="form-group mb-3">
+      <label for="scheduleSelect" class="form-label">Select Schedule:</label>
+      <select id="scheduleSelect" [(ngModel)]="selectedScheduleId" (change)="fetchTrackingDetails()" class="form-select">
+        <option [ngValue]="null" disabled>Select a production schedule</option>
+        <option *ngFor="let s of schedules" [ngValue]="s.psId">
+          Schedule #{{ s.psId }} - {{ s.product?.productsName || 'N/A' }} (Status: {{ s.status }})
+        </option>
+      </select>
+    </div>
 
-  <div *ngIf="progress" class="timeline-wrapper mt-5">
-    <div class="timeline d-flex justify-content-between position-relative">
-      <div class="step text-center" *ngFor="let stage of stages; let i = index">
-        <div class="circle-wrapper position-relative d-flex flex-column align-items-center">
-          <div class="circle d-flex align-items-center justify-content-center mb-2"
-               [ngClass]="{ 'active': isStageActive(stage) }">
-            <i class="bi bi-check-lg"></i>
+    <div class="text-end">
+      <button class="btn btn-primary" (click)="refreshSchedules()">
+        <i class="bi bi-arrow-repeat"></i> Refresh List
+      </button>
+    </div>
+
+    <!-- Timeline -->
+    <div *ngIf="trackingDetails" class="timeline-wrapper mt-5">
+      <div class="timeline d-flex justify-content-between position-relative">
+        <div class="step text-center" *ngFor="let stage of stages; let i = index">
+          <div class="circle-wrapper position-relative d-flex flex-column align-items-center">
+            <div class="circle d-flex align-items-center justify-content-center mb-2" [ngClass]="{ 'active': isStageActive(stage) }">
+              <i class="bi bi-check-lg"></i>
+            </div>
+            <div class="line position-absolute top-50 start-100 translate-middle-y" *ngIf="i < stages.length - 1" [ngClass]="{ 'active': isStageActive(stages[i + 1]) }"></div>
           </div>
-
-          <div class="line position-absolute top-50 start-100 translate-middle-y"
-               *ngIf="i < stages.length - 1"
-               [ngClass]="{ 'active': isStageActive(stages[i + 1]) }">
+          <div class="stage-icon my-1">
+            <i [ngClass]="stageIcons[i]" class="stage-symbol fs-4"></i>
           </div>
-        </div>
-
-        <div class="stage-icon my-1">
-          <i [ngClass]="stageIcons[i]" class="stage-symbol fs-4"></i>
-        </div>
-
-        <div class="stage-label mt-1 fw-semibold"
-             [ngClass]="{ 'active': isStageActive(stage) }">
-          {{ stage }}
+          <div class="stage-label mt-1 fw-semibold" [ngClass]="{ 'active': isStageActive(stage) }">
+            {{ stageLabels[i] }}
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <div class="order-info mt-4" *ngIf="progress">
-    <p><strong>Schedule ID:</strong> {{ progress.productionScheduleId }}</p>
-    <p><strong>Current Stage:</strong> {{ progress.stage }}</p>
-    <p><strong>Product Name:</strong> {{ progress.productName }}</p>
+    <!-- Details Box -->
+    <div class="order-info mt-4" *ngIf="trackingDetails">
+      <p><strong>Schedule ID:</strong> {{ trackingDetails.psid }}</p>
+      <p><strong>Product Name:</strong> {{ trackingDetails.productName }}</p>
+      <p><strong>Quantity:</strong> {{ trackingDetails.psquantity }}</p>
+      <hr>
+      <p><strong>Overall Status:</strong> {{ trackingDetails.psstatus }}</p>
+      <p><strong>Current Timeline Stage:</strong> {{ trackingDetails.currentStage }}</p>
+      <p><strong>Start Date:</strong> {{ trackingDetails.psstartdate | date: 'mediumDate' }}</p>
+      <p><strong>Target End Date:</strong> {{ trackingDetails.psenddate | date: 'mediumDate' }}</p>
+    </div>
   </div>
 </div>

@@ -1,76 +1,122 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+// Corrected the import path to go up one more level to find the 'services' directory
+import { ProductionTrackingService, ProductionSchedule, ProductionTrackingDetails } from '../../../services/production-tracking.service'; // Adjust path if needed
 
 @Component({
   selector: 'app-production-tracking',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './production-tracking.component.html',
-  styleUrls: ['./production-tracking.component.css']
+  styleUrls: ['./production-tracking.component.scss'] // Use .scss for consistency
 })
 export class ProductionTrackingComponent implements OnInit {
-  schedules: any[] = [];
+  // Use strong types for better code quality and editor support
+  schedules: ProductionSchedule[] = [];
   selectedScheduleId: number | null = null;
-  progress: any = null;
+  trackingDetails: ProductionTrackingDetails | null = null;
+  isLoading: boolean = false;
+  errorMessage: string | null = null;
 
-  stages = ['Scheduled', 'In Production', 'Completed', 'Dispatched'];
-
-  stageIcons: string[] = [
-    'bi bi-calendar-plus', // Scheduled
-    'bi bi-box-seam',      // In Production
-    'bi bi-check2-circle', // Completed
-    'bi bi-truck'          // Dispatched
+  // Values used by the timeline in the template
+  readonly stages = ['SCHEDULED', 'IN_PRODUCTION', 'COMPLETED', 'DISPATCHED'];
+  readonly stageLabels = ['Scheduled', 'In Production', 'Completed', 'Dispatched'];
+  readonly stageIcons = [
+    'bi bi-calendar-plus',  // SCHEDULED
+    'bi bi-box-seam',       // IN_PRODUCTION
+    'bi bi-check2-circle',  // COMPLETED
+    'bi bi-truck'           // DISPATCHED
   ];
 
-  constructor(private http: HttpClient, private route: ActivatedRoute) {}
+  constructor(
+    private route: ActivatedRoute,
+    private trackingService: ProductionTrackingService
+  ) {}
 
   ngOnInit(): void {
     this.loadSchedules();
+  }
 
-    this.route.paramMap.subscribe(params => {
-      const idFromRoute = params.get('id');
-      if (idFromRoute) {
-        this.selectedScheduleId = Number(idFromRoute);
-        this.loadProductionProgress(this.selectedScheduleId);
-      } else {
-        this.selectedScheduleId = null;
+  loadSchedules(): void {
+    this.isLoading = true;
+    this.errorMessage = null;
+    this.trackingService.getAllSchedules().subscribe({
+      // Added explicit type for 'data' to resolve TS7006
+      next: (data: ProductionSchedule[]) => {
+        this.schedules = data;
+        this.isLoading = false;
+        // Check for route param after schedules have loaded
+        this.checkRouteForId();
+      },
+      // Added explicit type for 'err' to resolve TS7006
+      error: (err: any) => {
+        console.error('Failed to load schedules:', err);
+        // Provide a more detailed and helpful error message
+        if (err.status === 0 || err.status === 404) {
+          this.errorMessage = 'Could not connect to the backend API. Is the server running and the URL correct?';
+        } else {
+          this.errorMessage = `Error loading schedules. Backend returned code ${err.status}: ${err.message}`;
+        }
+        this.isLoading = false;
       }
     });
   }
 
-  loadSchedules(): void {
-    this.http.get<any[]>('http://localhost:8080/api/production-schedules').subscribe({
-      next: data => this.schedules = data,
-      error: err => console.error('Error loading schedules', err)
-    });
-  }
-
-  loadProductionProgress(scheduleId: number): void {
-    this.http.get<any>(`http://localhost:8080/api/production-progress/schedule/${scheduleId}`).subscribe({
-      next: data => this.progress = data,
-      error: err => console.error('Error loading progress', err)
-    });
-  }
-
-  onScheduleSelect(): void {
-    if (this.selectedScheduleId) {
-      this.loadProductionProgress(this.selectedScheduleId);
+  private checkRouteForId(): void {
+    const idFromRoute = this.route.snapshot.paramMap.get('id');
+    if (idFromRoute) {
+      const scheduleId = +idFromRoute;
+      // Ensure the ID from the route is actually in our list of schedules
+      if (this.schedules.some(s => s.psId === scheduleId)) {
+        this.selectedScheduleId = scheduleId;
+        this.fetchTrackingDetails();
+      }
     }
   }
 
+  fetchTrackingDetails(): void {
+    if (!this.selectedScheduleId) {
+      this.trackingDetails = null;
+      return;
+    }
+    this.isLoading = true;
+    this.errorMessage = null;
+    this.trackingService.getTrackingDetails(this.selectedScheduleId).subscribe({
+      // Added explicit type for 'data' to resolve TS7006
+      next: (data: ProductionTrackingDetails) => {
+        this.trackingDetails = data;
+        this.isLoading = false;
+      },
+      // Added explicit type for 'err' to resolve TS7006
+      error: (err: any) => {
+        console.error('Failed to load tracking details:', err);
+        // Provide a more detailed and helpful error message
+        if (err.status === 0 || err.status === 404) {
+          this.errorMessage = `Could not load details for schedule #${this.selectedScheduleId}. Is the server running?`;
+        } else {
+          this.errorMessage = `Error loading details. Backend returned code ${err.status}: ${err.message}`;
+        }
+        this.isLoading = false;
+        this.trackingDetails = null;
+      }
+    });
+  }
+
   isStageActive(stage: string): boolean {
-    if (!this.progress) return false;
-    const currentIndex = this.stages.indexOf(this.progress.stage);
-    const thisIndex = this.stages.indexOf(stage);
-    return thisIndex <= currentIndex;
+    if (!this.trackingDetails?.currentStage) {
+      return false;
+    }
+    const currentIndex = this.stages.indexOf(this.trackingDetails.currentStage);
+    const stageIndex = this.stages.indexOf(stage);
+    return stageIndex <= currentIndex;
   }
 
   refreshSchedules(): void {
-    this.loadSchedules();
     this.selectedScheduleId = null;
-    this.progress = null;
+    this.trackingDetails = null;
+    this.loadSchedules();
   }
 }
+
