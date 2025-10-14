@@ -25,7 +25,7 @@ export class ViewRequestsComponent implements OnInit {
     this.fetchRequests();
   }
 
-  // Fetch all production requests
+  // Fetch all production requests from database
   fetchRequests(): void {
     this.loading = true;
     this.errorMessage = null;
