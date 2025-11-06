@@ -1,110 +1,21 @@
-.tracking-container {
-  max-width: 900px;
-  margin: auto;
-  padding: 2rem;
-  background-color: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
-  font-family: 'Segoe UI', sans-serif;
-  color: #333;
-}
-
-.timeline {
-  display: flex;
-  justify-content: space-between;
-  padding: 2rem 1rem;
-  align-items: center;
+.timeline-wrapper {
   position: relative;
-  max-width: 100%;
-}
-
-.step {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: 1;
-  min-width: 80px;
-  position: relative;
-}
-
-.circle-wrapper {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  position: relative;
-  justify-content: center;
 }
 
 .circle {
-  width: 34px;
-  height: 34px;
-  background-color: #ccc;
+  width: 30px;
+  height: 30px;
+  border: 2px solid #ccc;
   border-radius: 50%;
-  z-index: 2;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: white;
-  font-size: 1rem;
-  transition: 0.3s ease;
+  color: #ccc;
 }
 
 .circle.active {
-  background-color: #673ab7;
-  box-shadow: 0 0 8px #673ab7cc;
-}
-
-.line {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  height: 4px;
-  background-color: #ccc;
-  z-index: 1;
-  border-radius: 4px;
-  transform: translateY(-50%);
-  width: 100%;
-}
-
-.line.active {
-  background-color: #673ab7;
-}
-
-.step:last-child .circle-wrapper .line {
-  display: none;
-}
-
-.stage-icon {
-  margin-top: 1rem;
-  font-size: 1.5rem;
-  color: #888;
-}
-
-.stage-symbol {
-  font-size: 1.8rem;
-  color: #000;
-  opacity: 0.6;
-}
-
-.stage-label {
-  margin-top: 0.5rem;
-  font-size: 0.9rem;
-  text-align: center;
-  opacity: 0.5;
-  font-weight: 500;
+  border-color: #007bff;
+  color: #007bff;
+  background-color: #e7f1ff;
 }
 
 .stage-label.active {
-  color: #673ab7;
-  font-weight: 700;
-  opacity: 1;
-}
-
-.order-info {
-  background-color: #f9f9f9;
-  padding: 1rem 1.5rem;
-  border-radius: 12px;
-  font-size: 1rem;
-  box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.05);
-  margin-top: 1.5rem;
+  color: #007bff;
 }

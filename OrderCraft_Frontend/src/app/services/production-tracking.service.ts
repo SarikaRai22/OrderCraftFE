@@ -1,51 +1,57 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
-// Interface for the schedule list (for the dropdown)
-export interface ProductionSchedule {
-  psId: number;
-  status: string;
-  product: {
-    productsId: number;
-    productsName: string;
-  };
-  // Add any other fields you might need from the schedule list
-}
-
-// Interface for the detailed tracking view
-export interface ProductionTrackingDetails {
-  psid: number;
-  psproductid: number;
+// ✅ Matches your backend response DTO
+export interface ProductionScheduleTrackingResponse {
+  scheduleId: number;
+  productId: number;
   productName: string;
-  psstartdate: string;
-  psenddate: string;
-  psquantity: number;
-  psstatus: string;
-  currentStage: string;
+  quantity: number;
+  startDate: string;
+  endDate: string;
+  status: string;
+  actions: string;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductionTrackingService {
-  private readonly BASE_URL = 'http://localhost:8080/api';
+  private readonly BASE_URL = 'http://localhost:8085/api/production-tracking'; // ✅ Your backend port
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
-  /**
-   * Fetches all production schedules for the dropdown.
-   * Corresponds to: GET /api/production-schedule
-   */
-  getAllSchedules(): Observable<ProductionSchedule[]> {
-    return this.http.get<ProductionSchedule[]>(`${this.BASE_URL}/production-schedule`);
+  private getHeaders(): HttpHeaders {
+    return new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
   }
 
-  /**
-   * Fetches the detailed tracking status for a given schedule ID.
-   * Corresponds to: GET /api/production-tracking/{id}
-   */
-  getTrackingDetails(id: number): Observable<ProductionTrackingDetails> {
-    return this.http.get<ProductionTrackingDetails>(`${this.BASE_URL}/production-tracking/${id}`);
+  // ✅ Fetch all production schedules
+  getAllSchedules(): Observable<ProductionScheduleTrackingResponse[]> {
+    return this.http
+      .get<ProductionScheduleTrackingResponse[]>(this.BASE_URL, { headers: this.getHeaders() })
+      .pipe(catchError(this.handleError));
+  }
+
+  // ✅ Fetch tracking details by ID
+  getTrackingDetails(id: number): Observable<ProductionScheduleTrackingResponse> {
+    return this.http
+      .get<ProductionScheduleTrackingResponse>(`${this.BASE_URL}/${id}`, { headers: this.getHeaders() })
+      .pipe(catchError(this.handleError));
+  }
+
+  // ✅ Update actions (RECEIVED or NOT_RECEIVED)
+  updateAction(id: number, action: string): Observable<string> {
+    return this.http
+      .put(`${this.BASE_URL}/${id}/actions?action=${action}`, {}, { responseType: 'text' })
+      .pipe(catchError(this.handleError));
+  }
+
+  private handleError(error: any) {
+    console.error('❌ API Error:', error);
+    return throwError(() => new Error(error.message || 'Server Error'));
   }
 }

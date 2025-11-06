@@ -1,58 +1,60 @@
 <div class="tracking-container">
   <h2>Track Production Schedule</h2>
 
-  <!-- Loading and Error States -->
   <div *ngIf="isLoading" class="alert alert-info">Loading data...</div>
   <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
 
-  <!-- Main Content -->
   <div *ngIf="!isLoading">
+    <!-- Schedule Dropdown -->
     <div class="form-group mb-3">
       <label for="scheduleSelect" class="form-label">Select Schedule:</label>
       <select id="scheduleSelect" [(ngModel)]="selectedScheduleId" (change)="fetchTrackingDetails()" class="form-select">
         <option [ngValue]="null" disabled>Select a production schedule</option>
-        <option *ngFor="let s of schedules" [ngValue]="s.psId">
-          Schedule #{{ s.psId }} - {{ s.product?.productsName || 'N/A' }} (Status: {{ s.status }})
+        <option *ngFor="let s of schedules" [ngValue]="s.scheduleId">
+          #{{ s.scheduleId }} - {{ s.productName }} ({{ s.status }})
         </option>
       </select>
     </div>
 
-    <div class="text-end">
+    <div class="text-end mb-3">
       <button class="btn btn-primary" (click)="refreshSchedules()">
-        <i class="bi bi-arrow-repeat"></i> Refresh List
+        <i class="bi bi-arrow-repeat"></i> Refresh
       </button>
     </div>
 
     <!-- Timeline -->
-    <div *ngIf="trackingDetails" class="timeline-wrapper mt-5">
+    <div *ngIf="trackingDetails" class="timeline-wrapper mt-4">
       <div class="timeline d-flex justify-content-between position-relative">
         <div class="step text-center" *ngFor="let stage of stages; let i = index">
-          <div class="circle-wrapper position-relative d-flex flex-column align-items-center">
-            <div class="circle d-flex align-items-center justify-content-center mb-2" [ngClass]="{ 'active': isStageActive(stage) }">
-              <i class="bi bi-check-lg"></i>
-            </div>
-            <div class="line position-absolute top-50 start-100 translate-middle-y" *ngIf="i < stages.length - 1" [ngClass]="{ 'active': isStageActive(stages[i + 1]) }"></div>
+          <div class="circle d-flex align-items-center justify-content-center mb-2"
+               [ngClass]="{ 'active': isStageActive(stage) }">
+            <i class="bi bi-check-lg"></i>
           </div>
           <div class="stage-icon my-1">
             <i [ngClass]="stageIcons[i]" class="stage-symbol fs-4"></i>
           </div>
-          <div class="stage-label mt-1 fw-semibold" [ngClass]="{ 'active': isStageActive(stage) }">
+          <div class="stage-label mt-1 fw-semibold"
+               [ngClass]="{ 'active': isStageActive(stage) }">
             {{ stageLabels[i] }}
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Details Box -->
-    <div class="order-info mt-4" *ngIf="trackingDetails">
-      <p><strong>Schedule ID:</strong> {{ trackingDetails.psid }}</p>
+    <!-- Details -->
+    <div *ngIf="trackingDetails" class="order-info mt-4 p-3 border rounded shadow-sm bg-light">
+      <p><strong>Schedule ID:</strong> {{ trackingDetails.scheduleId }}</p>
       <p><strong>Product Name:</strong> {{ trackingDetails.productName }}</p>
-      <p><strong>Quantity:</strong> {{ trackingDetails.psquantity }}</p>
-      <hr>
-      <p><strong>Overall Status:</strong> {{ trackingDetails.psstatus }}</p>
-      <p><strong>Current Timeline Stage:</strong> {{ trackingDetails.currentStage }}</p>
-      <p><strong>Start Date:</strong> {{ trackingDetails.psstartdate | date: 'mediumDate' }}</p>
-      <p><strong>Target End Date:</strong> {{ trackingDetails.psenddate | date: 'mediumDate' }}</p>
+      <p><strong>Quantity:</strong> {{ trackingDetails.quantity }}</p>
+      <p><strong>Status:</strong> {{ trackingDetails.status }}</p>
+      <p><strong>Actions:</strong> {{ trackingDetails.actions || 'PENDING' }}</p>
+      <p><strong>Start Date:</strong> {{ trackingDetails.startDate | date: 'mediumDate' }}</p>
+      <p><strong>End Date:</strong> {{ trackingDetails.endDate | date: 'mediumDate' }}</p>
+
+      <div class="mt-3" *ngIf="trackingDetails.status === 'COMPLETED'">
+        <button class="btn btn-success me-2" (click)="updateAction('RECEIVED')">Mark as RECEIVED</button>
+        <button class="btn btn-danger" (click)="updateAction('NOT_RECEIVED')">Mark as NOT RECEIVED</button>
+      </div>
     </div>
   </div>
 </div>
